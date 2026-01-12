@@ -23,32 +23,32 @@ function MaintainEvents()
     -- Allow moving around even though the game enforces the shop menu context
     if rootMenu.AllowWalking and not ShopData.state.shuttingDown then
         -- Simulates the player menu context
-        SetControlContext(9, 1623465848)
+        SetControlContext(9, "OnlinePlayerMenu")
         SetControlContext(10, 0)
 
         -- Disable certain controls that would interfere with the shop UI but wouldn't with player menu
-        DisableControlAction(0, joaat("INPUT_MAP"), true)
-        DisableControlAction(0, joaat("INPUT_SELECT_ITEM_WHEEL"), true)
-        DisableControlAction(0, joaat("INPUT_FRONTEND_PAUSE"), true)
-        DisableControlAction(0, joaat("INPUT_FRONTEND_PAUSE_ALTERNATE"), true)
-        DisableControlAction(0, joaat("INPUT_INTERACT_LOCKON"), false)
+        DisableControlAction(0, "INPUT_MAP", true)
+        DisableControlAction(0, "INPUT_SELECT_ITEM_WHEEL", true)
+        DisableControlAction(0, "INPUT_FRONTEND_PAUSE", true)
+        DisableControlAction(0, "INPUT_FRONTEND_PAUSE_ALTERNATE", true)
+        DisableControlAction(0, "INPUT_INTERACT_LOCKON", false)
 
         -- Prevent attacking while in the shop UI
-        DisableControlAction(0, joaat("INPUT_AIM"), false)
-        DisableControlAction(0, joaat("INPUT_ATTACK"), false)
+        DisableControlAction(0, "INPUT_AIM", false)
+        DisableControlAction(0, "INPUT_ATTACK", false)
 
         -- The player menu additionally disables these controls
-        DisableControlAction(0, joaat("INPUT_NEXT_CAMERA"), false)
-        DisableControlAction(0, joaat("INPUT_HORSE_SPRINT"), false)
-        DisableControlAction(0, joaat("INPUT_JUMP"), false)
-        DisableControlAction(0, joaat("INPUT_SPRINT"), false)
-        DisableControlAction(0, joaat("INPUT_ENTER"), false)
-        DisableControlAction(0, joaat("INPUT_MELEE_ATTACK"), false)
-        DisableControlAction(0, joaat("INPUT_PHONE"), false)
-        DisableControlAction(0, joaat("INPUT_RADIAL_MENU_SLOT_NAV_NEXT"), false)
-        DisableControlAction(0, joaat("INPUT_RADIAL_MENU_SLOT_NAV_PREV"), false)
-        DisableControlAction(0, joaat("INPUT_COVER"), false)
-        DisableControlAction(0, joaat("INPUT_OPEN_WHEEL_MENU"), false)
+        DisableControlAction(0, "INPUT_NEXT_CAMERA", false)
+        DisableControlAction(0, "INPUT_HORSE_SPRINT", false)
+        DisableControlAction(0, "INPUT_JUMP", false)
+        DisableControlAction(0, "INPUT_SPRINT", false)
+        DisableControlAction(0, "INPUT_ENTER", false)
+        DisableControlAction(0, "INPUT_MELEE_ATTACK", false)
+        DisableControlAction(0, "INPUT_PHONE", false)
+        DisableControlAction(0, "INPUT_RADIAL_MENU_SLOT_NAV_NEXT", false)
+        DisableControlAction(0, "INPUT_RADIAL_MENU_SLOT_NAV_PREV", false)
+        DisableControlAction(0, "INPUT_COVER", false)
+        DisableControlAction(0, "INPUT_OPEN_WHEEL_MENU", false)
     end
 
     -- Use orbit camera (focuses the camera properly) when in the shop UI
@@ -236,7 +236,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(0)
 
         -- Only hook into the always-running event handler while the UI is open
-        if IsUiappRunningByHash(joaat("shop_menu")) == 1 then
+        if IsUiappRunning("shop_menu") == 1 then
             local success, error = pcall(MaintainEvents)
 
             -- If something went wrong, close the UI to prevent the user from getting stuck
@@ -244,7 +244,7 @@ Citizen.CreateThread(function()
                 print("[NativeShop] An error occurred while processing shop events: ")
                 print("  " .. tostring(error))
 
-                CloseUiappImmediate(joaat("shop_menu"))
+                CloseUiappImmediate("shop_menu")
             end
         end
     end
@@ -262,7 +262,7 @@ AddEventHandler("onResourceStop", function(resourceName)
         print("[NativeShop] An error occurred while exiting the shop UI on resource stop: ")
         print("  " .. tostring(error))
 
-        CloseUiappImmediate(joaat("shop_menu"))
+        CloseUiappImmediate("shop_menu")
     end
 end)
 

@@ -88,7 +88,6 @@ local data = {
                 {
                     Id = "DAILY_CHALLENGE_1",
                     Type = "BUSINESS",
-                    Label = "",
                     Footer = "This challenge is not yet completed",
                     Data = {
                         Description = "2/5 Chain Pickerel caught",
@@ -100,7 +99,6 @@ local data = {
                 {
                     Id = "DAILY_CHALLENGE_2",
                     Type = "BUSINESS",
-                    Label = "",
                     Footer = "This challenge is not yet completed",
                     Data = {
                         Description = "1/3 Collectibles collected",
@@ -112,7 +110,6 @@ local data = {
                 {
                     Id = "DAILY_CHALLENGE_3",
                     Type = "BUSINESS",
-                    Label = "",
                     Footer = "This challenge is completed",
                     Data = {
                         Description = "1/1 Visited Cotorra springs",
@@ -124,7 +121,6 @@ local data = {
                 {
                     Id = "DAILY_CHALLENGE_4",
                     Type = "BUSINESS",
-                    Label = "",
                     Footer = "This challenge is not yet completed",
                     Data = {
                         Description = "0/1 Resupply missions completed",
@@ -136,7 +132,6 @@ local data = {
                 {
                     Id = "DAILY_CHALLENGE_5",
                     Type = "BUSINESS",
-                    Label = "",
                     Footer = "This challenge is not yet completed",
                     Data = {
                         Description = "0/1 Whole animal carcasses sold",
@@ -348,7 +343,7 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
 
-        if IsControlJustPressed(0, "INPUT_PLAYER_MENU") and IsUiappRunningByHash(joaat("shop_menu")) ~= 1 then
+        if IsControlJustPressed(0, "INPUT_PLAYER_MENU") and IsUiappRunning("shop_menu") ~= 1 then
             local prompt = 0
 
             -- Create prompt

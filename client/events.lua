@@ -1,5 +1,3 @@
-local uiEventChannel = joaat("generic_shop_ui_events")
-
 ShopEvents = {
     FLAG_FOCUSED = 1 << 1,
     FLAG_PALETTE_CHANGED = 1 << 2,
@@ -101,31 +99,30 @@ function ShopEvents.GetUiEventType(id)
         [joaat("NEW_ACTIVITY")]                 = "NEW_ACTIVITY",
     }
 
-    if types[id] then
-        return types[id]
-    end
-
-    print("[NativeShop] Unhandled UI Event Type: " .. tostring(id))
-    return "UNKNOWN_UI_EVENT"
+    return types[id]
 end
 
-function ShopEvents.GetSelectEventType(id)
+function ShopEvents.GetHashParameterType(id)
     local types = {
-        [joaat("GENERIC_SHOP_UI_SELECT")]           = "GENERIC_SHOP_UI_SELECT",
-        [joaat("GENERIC_SHOP_UI_SECONDARY_SELECT")] = "GENERIC_SHOP_UI_SECONDARY_SELECT",
-        [joaat("GENERIC_SHOP_UI_SELECT_OPTION")]    = "GENERIC_SHOP_UI_SELECT_OPTION",
-        [joaat("GENERIC_SHOP_UI_SELECT_TOGGLE")]    = "GENERIC_SHOP_UI_SELECT_TOGGLE",
-        [joaat("GENERIC_SHOP_UI_SELECT_INFO")]      = "GENERIC_SHOP_UI_SELECT_INFO",
-        [joaat("GENERIC_SHOP_UI_SELECT_MODIFY")]    = "GENERIC_SHOP_UI_SELECT_MODIFY",
-        [joaat("GENERIC_SHOP_UI_EXIT")]             = "GENERIC_SHOP_UI_EXIT",
+        [joaat("GENERIC_SHOP_UI_BYPASS")]            = "GENERIC_SHOP_UI_BYPASS",
+        [joaat("GENERIC_SHOP_UI_ENTRY")]             = "GENERIC_SHOP_UI_ENTRY",
+        [joaat("GENERIC_SHOP_UI_EXIT")]              = "GENERIC_SHOP_UI_EXIT",
+        [joaat("GENERIC_SHOP_UI_HAIR_STEPPER")]      = "GENERIC_SHOP_UI_HAIR_STEPPER",
+        [joaat("GENERIC_SHOP_UI_NEXT_PAGE")]         = "GENERIC_SHOP_UI_NEXT_PAGE",
+        [joaat("GENERIC_SHOP_UI_NEXT_SCENE")]        = "GENERIC_SHOP_UI_NEXT_SCENE",
+        [joaat("GENERIC_SHOP_UI_PALETTE_FOCUS")]     = "GENERIC_SHOP_UI_PALETTE_FOCUS",
+        [joaat("GENERIC_SHOP_UI_PALETTE_FOCUSLESS")] = "GENERIC_SHOP_UI_PALETTE_FOCUSLESS",
+        [joaat("GENERIC_SHOP_UI_PREV_SCENE")]        = "GENERIC_SHOP_UI_PREV_SCENE",
+        [joaat("GENERIC_SHOP_UI_SECONDARY_SELECT")]  = "GENERIC_SHOP_UI_SECONDARY_SELECT",
+        [joaat("GENERIC_SHOP_UI_SELECT")]            = "GENERIC_SHOP_UI_SELECT",
+        [joaat("GENERIC_SHOP_UI_SELECT_INFO")]       = "GENERIC_SHOP_UI_SELECT_INFO",
+        [joaat("GENERIC_SHOP_UI_SELECT_MODIFY")]     = "GENERIC_SHOP_UI_SELECT_MODIFY",
+        [joaat("GENERIC_SHOP_UI_SELECT_OPTION")]     = "GENERIC_SHOP_UI_SELECT_OPTION",
+        [joaat("GENERIC_SHOP_UI_SELECT_TOGGLE")]     = "GENERIC_SHOP_UI_SELECT_TOGGLE",
+        [joaat("GENERIC_SHOP_UI_STEPPER")]           = "GENERIC_SHOP_UI_STEPPER",
     }
 
-    if types[id] then
-        return types[id]
-    end
-
-    print("[NativeShop] Unhandled Select Event Type: " .. tostring(id))
-    return "UNKNOWN_SELECT_EVENT"
+    return types[id]
 end
 
 ---Ensures that the focused item datastore is valid and accessible.
@@ -181,19 +178,33 @@ function ShopEvents.EnsureFocusedItemDatastore()
     return true
 end
 
-function ShopEvents.GetFocusedItemType()
+function ShopEvents.ReadDataString(datastore, key)
     -- _DATABINDING_READ_DATA_STRING_FROM_PARENT: Helper for this native doesn't return string
-    return Citizen.InvokeNative(0x6323AD277C4A2AFB, ShopEvents.state.focusedDatastore, "uiItemType", Citizen.ResultAsString())
+    return Citizen.InvokeNative(0x6323AD277C4A2AFB, datastore, key, Citizen.ResultAsString())
+end
+
+function ShopEvents.GetFocusedItemId()
+    return ShopEvents.ReadDataString(ShopEvents.state.focusedDatastore, "uiItemID")
+end
+
+function ShopEvents.GetFocusedItemType()
+    return ShopEvents.ReadDataString(ShopEvents.state.focusedDatastore, "uiItemType")
+end
+
+function ShopEvents.GetUnfocusedItemId()
+    return ShopEvents.ReadDataString(ShopEvents.state.unfocusedDatastore, "uiItemID")
 end
 
 function ShopEvents.GetUnfocusedItemType()
-    -- _DATABINDING_READ_DATA_STRING_FROM_PARENT: Helper for this native doesn't return string
-    return Citizen.InvokeNative(0x6323AD277C4A2AFB, ShopEvents.state.unfocusedDatastore, "uiItemType", Citizen.ResultAsString())
+    return ShopEvents.ReadDataString(ShopEvents.state.unfocusedDatastore, "uiItemType")
+end
+
+function ShopEvents.GetSelectedItemId()
+    return ShopEvents.ReadDataString(ShopEvents.state.selectedDatastore, "uiItemID")
 end
 
 function ShopEvents.GetSelectedItemType()
-    -- _DATABINDING_READ_DATA_STRING_FROM_PARENT: Helper for this native doesn't return string
-    return Citizen.InvokeNative(0x6323AD277C4A2AFB, ShopEvents.state.selectedDatastore, "uiItemType", Citizen.ResultAsString())
+    return ShopEvents.ReadDataString(ShopEvents.state.selectedDatastore, "uiItemType")
 end
 
 function ShopEvents.GetSelectedTargetMenu()
@@ -201,6 +212,8 @@ function ShopEvents.GetSelectedTargetMenu()
 end
 
 Citizen.CreateThread(function()
+    local uiEventChannel = joaat("generic_shop_ui_events")
+
     while true do
         Citizen.Wait(0)
 
@@ -215,22 +228,26 @@ Citizen.CreateThread(function()
             msg:SetInt32(24, 0)
 
             if Citizen.InvokeNative(0x90237103F27F7937, uiEventChannel, msg:Buffer()) ~= 0 then -- EVENTS_UI_PEEK_MESSAGE
-                local eventId = msg:GetInt32(0)
+                local eventHash = msg:GetInt32(0)
                 local intParameter = msg:GetInt32(8)
                 local hashParameter = msg:GetInt32(16)
                 local datastoreId = msg:GetInt32(24)
 
+                local eventType = ShopEvents.GetUiEventType(eventHash)
+                local hashParameterType = ShopEvents.GetHashParameterType(hashParameter)
+
                 -- print("[NativeShop] Received UI Event:")
-                -- print("  Event ID: " .. tostring(eventId))
-                -- print("  Event Type: " .. ShopEvents.GetUiEventType(eventId))
+                -- print("  Event ID: " .. tostring(eventHash))
+                -- print("  Event Type: " .. tostring(eventType))
                 -- print("  Hash Parameter: " .. tostring(hashParameter))
+                -- print("  Hash Parameter Type: " .. tostring(hashParameterType))
                 -- print("  Int Parameter: " .. tostring(intParameter))
                 -- print("  Datastore ID: " .. tostring(datastoreId))
 
-                if eventId == joaat("TAB_PAGE_DECREMENT") or eventId == joaat("TAB_PAGE_INCREMENT") then
+                if eventType == "TAB_PAGE_DECREMENT" or eventType == "TAB_PAGE_INCREMENT" then
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_FILTER_CHANGED)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                elseif eventId == joaat("DATA_ADJUSTABLE_CHANGED") then
+                elseif eventType == "DATA_ADJUSTABLE_CHANGED" then
                     ShopEvents.state.adjustableIndex = intParameter
                     ShopEvents.state.adjustableParameter = hashParameter
 
@@ -240,15 +257,15 @@ Citizen.CreateThread(function()
 
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                elseif eventId == joaat("ITEM_FOCUSED") then
+                elseif eventType == "ITEM_FOCUSED" then
                     ShopEvents.state.focusedDatastore = datastoreId
                     ShopEvents.state.focusedIndex = intParameter
-                    ShopEvents.state.focusedItem = DatabindingReadDataIntFromParent(datastoreId, "uiItemID")
+                    ShopEvents.state.focusedItem = ShopEvents.GetFocusedItemId()
 
                     -- When pages are changed, the focused datastore ID is the previous (incorrect) store
                     -- To prevent the affecting our events, we check if it is valid or restore from index
                     if ShopEvents.EnsureFocusedItemDatastore() then
-                        if hashParameter == joaat("GENERIC_SHOP_UI_NEXT_PAGE") then
+                        if hashParameterType == "GENERIC_SHOP_UI_NEXT_PAGE" then
                             ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEXT_PAGE)
                         else
                             ShopEvents.SetShopEventFlag(ShopEvents.FLAG_FOCUSED)
@@ -261,40 +278,38 @@ Citizen.CreateThread(function()
                         print("  Index: " .. tostring(ShopEvents.state.focusedIndex))
                         print("  Item ID: " .. tostring(ShopEvents.state.focusedItem))
                     end
-                elseif eventId == joaat("ITEM_UNFOCUSED") then
+                elseif eventType == "ITEM_UNFOCUSED" then
                     ShopEvents.state.unfocusedDatastore = datastoreId
                     ShopEvents.state.unfocusedIndex = intParameter
-                    ShopEvents.state.unfocusedItem = DatabindingReadDataIntFromParent(datastoreId, "uiItemID")
+                    ShopEvents.state.unfocusedItem = ShopEvents.GetUnfocusedItemId()
 
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_UNFOCUSED)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                elseif eventId == joaat("ITEM_SELECTED") then
+                elseif eventType == "ITEM_SELECTED" then
                     ShopEvents.state.selectedDatastore = datastoreId
                     ShopEvents.state.selectedIndex = intParameter
-                    ShopEvents.state.selectedItem = DatabindingReadDataIntFromParent(datastoreId, "uiItemID")
-                    ShopEvents.state.lastAction = ShopEvents.GetSelectEventType(hashParameter)
+                    ShopEvents.state.selectedItem = ShopEvents.GetSelectedItemId()
+                    ShopEvents.state.lastAction = hashParameterType
 
-                    if hashParameter == joaat("GENERIC_SHOP_UI_EXIT") then
+                    if hashParameterType == "GENERIC_SHOP_UI_EXIT" then
                         ShopEvents.SetShopEventFlag(ShopEvents.FLAG_EXIT)
                     end
 
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_ITEM_SELECTED)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                elseif eventId == joaat("NEW_PAGE") then
-                    if hashParameter == joaat("GENERIC_SHOP_UI_NEXT_SCENE") then
+                elseif eventType == "NEW_PAGE" then
+                    if hashParameterType == "GENERIC_SHOP_UI_NEXT_SCENE" then
                         ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEXT_SCENE)
-                    elseif hashParameter == joaat("GENERIC_SHOP_UI_PREV_SCENE") then
+                    elseif hashParameterType == "GENERIC_SHOP_UI_PREV_SCENE" then
                         ShopEvents.SetShopEventFlag(ShopEvents.FLAG_PREV_SCENE)
-                    elseif hashParameter == joaat("GENERIC_SHOP_UI_NEXT_PAGE") then
+                    elseif hashParameterType == "GENERIC_SHOP_UI_NEXT_PAGE" then
                         ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEXT_SCENE)
-                    elseif hashParameter == joaat("GENERIC_SHOP_UI_PREV_PAGE") then
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_PREV_SCENE)
                     end
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                elseif eventId == joaat("NEW_ACTIVITY") then
-                    if hashParameter == joaat("GENERIC_SHOP_UI_ENTRY") then
+                elseif eventType == "NEW_ACTIVITY" then
+                    if hashParameterType == "GENERIC_SHOP_UI_ENTRY" then
                         ShopEvents.state.flagUiEntry = true
-                    elseif hashParameter == joaat("GENERIC_SHOP_UI_BYPASS") then
+                    elseif hashParameterType == "GENERIC_SHOP_UI_BYPASS" then
                         if ShopEvents.state.flagUiEntry then
                             ShopEvents.state.flagUiEntry = false
                             ShopEvents.state.flagUiBypass = false
@@ -302,24 +317,25 @@ Citizen.CreateThread(function()
                             ShopEvents.state.flagUiBypass = true
                         end
                     end
-                elseif eventId == joaat("PAGED_COLLECTION_RESET") then
+                elseif eventType == "PAGED_COLLECTION_RESET" then
                     ShopEvents.state.collectionId = hashParameter
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEW_COLLECTION)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                elseif eventId == joaat("PAGED_COLLECTION_INITIALIZED") then
+                elseif eventType == "PAGED_COLLECTION_INITIALIZED" then
                     ShopEvents.state.collectionId = hashParameter
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEW_COLLECTION)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                elseif eventId == joaat("PAGED_COLLECTION_REQUEST") then
+                elseif eventType == "PAGED_COLLECTION_REQUEST" then
                     ShopEvents.state.collectionRequestParameter = hashParameter
                     ShopEvents.state.collectionStartIndex = intParameter
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_COLLECTION_REQUEST)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 else
                     print("[NativeShop] Received unhandled event type:")
-                    print("  Event ID: " .. tostring(eventId))
-                    print("  Event Type: " .. ShopEvents.GetUiEventType(eventId))
+                    print("  Event ID: " .. tostring(eventHash))
+                    print("  Event Type: " .. tostring(eventType))
                     print("  Hash Parameter: " .. tostring(hashParameter))
+                    print("  Hash Parameter Type: " .. tostring(hashParameterType))
                     print("  Int Parameter: " .. tostring(intParameter))
                 end
             end

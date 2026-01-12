@@ -243,7 +243,7 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
 
-        if IsControlJustPressed(0, "INPUT_QUICK_USE_ITEM") and IsUiappRunningByHash(joaat("shop_menu")) ~= 1 then
+        if IsControlJustPressed(0, "INPUT_QUICK_USE_ITEM") and IsUiappRunning("shop_menu") ~= 1 then
             local prompt = 0
 
             -- Create prompt

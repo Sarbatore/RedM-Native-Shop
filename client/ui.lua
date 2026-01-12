@@ -281,15 +281,15 @@ function ShopUI.SetIndex(index)
 end
 
 function ShopUI.EnterScene(type)
-    return RequestUiappTransitionByHash(joaat("shop_menu"), joaat(type))
+    return RequestUiappTransitionByHash("shop_menu", type)
 end
 
 function ShopUI.NextScene()
-    return RequestUiappTransitionByHash(joaat("shop_menu"), joaat("NEXT_SCENE"))
+    return RequestUiappTransitionByHash("shop_menu", "next_scene")
 end
 
 function ShopUI.PrevScene()
-    return RequestUiappTransitionByHash(joaat("shop_menu"), joaat("PREV_SCENE"))
+    return RequestUiappTransitionByHash("shop_menu", "prev_scene")
 end
 
 function ShopUI.Open(id)
@@ -299,7 +299,7 @@ function ShopUI.Open(id)
     ShopData.state.shuttingDown = false
     TriggerEvent("native_shop:opening", id)
 
-    LaunchUiappByHashWithEntry(joaat("shop_menu"), joaat("generic_shop"))
+    LaunchUiappWithEntry("shop_menu", "generic_shop")
 end
 
 function ShopUI.Exit()
@@ -336,7 +336,7 @@ function ShopUI.Exit()
     ShopNavigator:close()
 
     -- Close the UI app
-    return CloseUiappByHash(joaat("shop_menu"))
+    return CloseUiapp("shop_menu")
 end
 
 function ShopUI.DisableItem(id)
@@ -465,16 +465,6 @@ function ShopUI.IsSceneTypeValid(type)
     end
 
     return false
-end
-
-function ShopUI.GetSceneTypeByHash(id)
-    local types = {}
-
-    for _, type in pairs(validSceneTypes) do
-        types[joaat(type)] = type
-    end
-
-    return types[id] or "MENU_TYPE_NONE"
 end
 
 function ShopUI.IsItemTypeValid(type)
@@ -1219,7 +1209,7 @@ function ShopUI.Builder.BuildScene(scene, menu)
 
     ShopUI.UpdateTitle()
     ShopUI.UpdateSubheader()
-    ShopUI.Scene.SetFooter("")
+    ShopUI.Scene.SetFooter()
 
     local callback = callbacks[scene]
     if callback then return callback(menu) end
@@ -1528,9 +1518,9 @@ end
 function ShopUI.Builder.FillBusinessItem(entry, item)
     local data = item.Data or {}
 
-    DatabindingAddDataInt(entry, "uiItemID", item.Id)
+    DatabindingAddDataString(entry, "uiItemID", item.Id)
     DatabindingAddDataString(entry, "uiItemType", "BUSINESS")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_BUSINESS_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_BUSINESS_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", 0)
     DatabindingAddDataString(entry, "uiItemRawText", item.Label or "")
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
@@ -1538,9 +1528,9 @@ function ShopUI.Builder.FillBusinessItem(entry, item)
     DatabindingAddDataHash(entry, "itemDescription", 0)
     DatabindingAddDataString(entry, "itemDescriptionRaw", data.Description or "")
     DatabindingAddDataFloat(entry, "Progress", data.Progress or 1.0)
-    DatabindingAddDataHash(entry, "textColor", joaat(data.TextColor or "COLOR_WHITE"))
-    DatabindingAddDataInt(entry, "texture", joaat(data.Texture or ""))
-    DatabindingAddDataInt(entry, "textureDictionary", joaat(data.TextureDictionary or ""))
+    DatabindingAddDataHash(entry, "textColor", data.TextColor or "COLOR_WHITE")
+    DatabindingAddDataHash(entry, "texture", data.Texture or 0)
+    DatabindingAddDataHash(entry, "textureDictionary", data.TextureDictionary or 0)
     DatabindingAddDataBool(entry, "timeIconVisible", data.TimeIconVisible or false)
     DatabindingAddDataBool(entry, "uiItemNew", data.IsNew or false)
 
@@ -1550,9 +1540,9 @@ end
 function ShopUI.Builder.FillCouponItem(entry, item)
     local data = item.Data or {}
 
-    DatabindingAddDataInt(entry, "uiItemID", item.Id)
+    DatabindingAddDataString(entry, "uiItemID", item.Id)
     DatabindingAddDataString(entry, "uiItemType", "COUPON")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_COUPON_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_COUPON_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", 0)
     DatabindingAddDataString(entry, "uiItemRawText", item.Label or "")
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
@@ -1561,9 +1551,9 @@ function ShopUI.Builder.FillCouponItem(entry, item)
     DatabindingAddDataString(entry, "itemDescriptionRaw", data.Description or "")
     DatabindingAddDataBool(entry, "maxCount", data.IsMaxCount or false)
     DatabindingAddDataInt(entry, "not_script_data_int_3", data.Quantity or 0)
-    DatabindingAddDataHash(entry, "textColor", joaat(data.TextColor or "COLOR_WHITE"))
-    DatabindingAddDataInt(entry, "texture", joaat(data.Texture or ""))
-    DatabindingAddDataInt(entry, "textureDictionary", joaat(data.TextureDictionary or ""))
+    DatabindingAddDataHash(entry, "textColor", data.TextColor or "COLOR_WHITE")
+    DatabindingAddDataHash(entry, "texture", data.Texture or 0)
+    DatabindingAddDataHash(entry, "textureDictionary", data.TextureDictionary or 0)
     DatabindingAddDataBool(entry, "timeIconVisible", data.TimeIconVisible or false)
     DatabindingAddDataBool(entry, "uiItemNew", data.IsNew or false)
 
@@ -1573,9 +1563,9 @@ end
 function ShopUI.Builder.FillHairItem(entry, item)
     local data = item.Data or {}
 
-    DatabindingAddDataInt(entry, "uiItemID", item.Id)
+    DatabindingAddDataString(entry, "uiItemID", item.Id)
     DatabindingAddDataString(entry, "uiItemType", "HAIR")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_HAIR_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_HAIR_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", 0)
     DatabindingAddDataString(entry, "uiItemRawText", item.Label or "")
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
@@ -1584,8 +1574,8 @@ function ShopUI.Builder.FillHairItem(entry, item)
     DatabindingAddDataString(entry, "itemDescriptionRaw", data.Description or "")
     DatabindingAddDataBool(entry, "maxCount", data.IsMaxCount or false)
     DatabindingAddDataInt(entry, "not_script_data_int_3", data.Quantity or 0)
-    DatabindingAddDataInt(entry, "texture", joaat(data.Texture or ""))
-    DatabindingAddDataInt(entry, "textureDictionary", joaat(data.TextureDictionary or ""))
+    DatabindingAddDataHash(entry, "texture", data.Texture or 0)
+    DatabindingAddDataHash(entry, "textureDictionary", data.TextureDictionary or 0)
     DatabindingAddDataBool(entry, "tickVisible", data.TickVisible or false)
     DatabindingAddDataBool(entry, "uiItemNew", data.IsNew or false)
 
@@ -1595,9 +1585,9 @@ end
 function ShopUI.Builder.FillInventoryItem(entry, item)
     local data = item.Data or {}
 
-    DatabindingAddDataInt(entry, "uiItemID", item.Id)
+    DatabindingAddDataString(entry, "uiItemID", item.Id)
     DatabindingAddDataString(entry, "uiItemType", "INVENTORY")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_INVENTORY_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_INVENTORY_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", 0)
     DatabindingAddDataString(entry, "uiItemRawText", item.Label or "")
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
@@ -1606,15 +1596,15 @@ function ShopUI.Builder.FillInventoryItem(entry, item)
     DatabindingAddDataString(entry, "equippedTexture", data.EquippedTexture or "")
     DatabindingAddDataString(entry, "equippedTXD", data.EquippedTextureDictionary or "")
     DatabindingAddDataBool(entry, "forSale", data.ForSale or false)
-    DatabindingAddDataInt(entry, "frontSlotTexture", joaat(data.FrontSlotTexture or ""))
-    DatabindingAddDataInt(entry, "frontSlotTextureColour", joaat(data.FrontSlotTextureColour or "COLOR_WHITE"))
-    DatabindingAddDataInt(entry, "frontSlotTextureDict", joaat(data.FrontSlotTextureDictionary or ""))
+    DatabindingAddDataHash(entry, "frontSlotTexture", data.FrontSlotTexture or 0)
+    DatabindingAddDataHash(entry, "frontSlotTextureColour", data.FrontSlotTextureColour or "COLOR_WHITE")
+    DatabindingAddDataHash(entry, "frontSlotTextureDict", data.FrontSlotTextureDictionary or 0)
     DatabindingAddDataBool(entry, "frontSlotTextureVisible", data.FrontSlotTextureVisible or data.FrontSlotTexture ~= nil)
     DatabindingAddDataBool(entry, "locked", data.Locked or false)
     DatabindingAddDataBool(entry, "owned", data.Owned or false)
     DatabindingAddDataInt(entry, "price", data.Price or 0)
     DatabindingAddDataInt(entry, "rank", data.Rank or 0)
-    DatabindingAddDataHash(entry, "rankTexture", joaat(data.RankTexture or ""))
+    DatabindingAddDataHash(entry, "rankTexture", data.RankTexture or 0)
     DatabindingAddDataBool(entry, "rankLocked", data.RankLocked or false)
     DatabindingAddDataBool(entry, "uiItemNew", data.IsNew or false)
     DatabindingAddDataBool(entry, "uiItemSale", data.IsOnSale or false)
@@ -1630,9 +1620,9 @@ function ShopUI.Builder.FillPaletteItem(entry, item)
     local label = item.Label or id
     local labelKey = ShopUI.CreateTextEntry("PALETTE", id, label)
 
-    DatabindingAddDataInt(entry, "uiItemID", id)
+    DatabindingAddDataString(entry, "uiItemID", id)
     DatabindingAddDataString(entry, "uiItemType", "PALETTE")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_PALETTE_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_PALETTE_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", labelKey)
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
 
@@ -1667,17 +1657,17 @@ function ShopUI.Builder.FillSaddleItem(entry, item)
     local label = item.Label or id
     local labelKey = ShopUI.CreateTextEntry("SADDLE", id, label)
 
-    DatabindingAddDataInt(entry, "uiItemID", id)
+    DatabindingAddDataString(entry, "uiItemID", id)
     DatabindingAddDataString(entry, "uiItemType", "SADDLE")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_SADDLE_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_SADDLE_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", labelKey)
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
 
-    DatabindingAddDataInt(entry, "backTexture", joaat(data.BackTexture or ""))
-    DatabindingAddDataHash(entry, "backTextureColour", joaat(data.BackTextureColour or "COLOR_WHITE"))
-    DatabindingAddDataInt(entry, "backTextureDict", joaat(data.BackTextureDictionary or ""))
+    DatabindingAddDataHash(entry, "backTexture", data.BackTexture or 0)
+    DatabindingAddDataHash(entry, "backTextureColour", data.BackTextureColour or "COLOR_WHITE")
+    DatabindingAddDataHash(entry, "backTextureDict", data.BackTextureDictionary or 0)
     DatabindingAddDataBool(entry, "backTextureVisible", data.BackTextureVisible or data.BackTexture ~= nil)
-    DatabindingAddDataInt(entry, "frontSlotTextureColour", joaat(data.FrontSlotTextureColour or "COLOR_WHITE"))
+    DatabindingAddDataHash(entry, "frontSlotTextureColour", data.FrontSlotTextureColour or "COLOR_WHITE")
     DatabindingAddDataBool(entry, "frontSlotTextureVisible", data.FrontSlotTextureVisible or data.FrontSlotTexture ~= nil)
 
     return entry
@@ -1686,24 +1676,24 @@ end
 function ShopUI.Builder.FillStableItem(entry, item)
     local data = item.Data or {}
 
-    DatabindingAddDataInt(entry, "uiItemID", item.Id)
+    DatabindingAddDataString(entry, "uiItemID", item.Id)
     DatabindingAddDataString(entry, "uiItemType", "STABLE")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_STABLE_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_STABLE_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", 0)
     DatabindingAddDataString(entry, "uiItemRawText", item.Label or "")
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
 
-    DatabindingAddDataInt(entry, "backTexture", joaat(data.BackTexture or ""))
-    DatabindingAddDataHash(entry, "backTextureColour", joaat(data.BackTextureColour or "COLOR_WHITE"))
-    DatabindingAddDataInt(entry, "backTextureDict", joaat(data.BackTextureDictionary or ""))
+    DatabindingAddDataHash(entry, "backTexture", data.BackTexture or 0)
+    DatabindingAddDataHash(entry, "backTextureColour", data.BackTextureColour or "COLOR_WHITE")
+    DatabindingAddDataHash(entry, "backTextureDict", data.BackTextureDictionary or 0)
     DatabindingAddDataBool(entry, "backTextureVisible", data.BackTextureVisible or data.BackTexture ~= nil)
-    DatabindingAddDataInt(entry, "frontAddSlotTexture", joaat(data.FrontAddSlotTexture or ""))
-    DatabindingAddDataInt(entry, "frontAddSlotTextureColour", joaat(data.FrontAddSlotTextureColour or "COLOR_WHITE"))
-    DatabindingAddDataInt(entry, "frontAddSlotTextureDict", joaat(data.FrontAddSlotTextureDictionary or ""))
+    DatabindingAddDataHash(entry, "frontAddSlotTexture", data.FrontAddSlotTexture or 0)
+    DatabindingAddDataHash(entry, "frontAddSlotTextureColour", data.FrontAddSlotTextureColour or "COLOR_WHITE")
+    DatabindingAddDataHash(entry, "frontAddSlotTextureDict", data.FrontAddSlotTextureDictionary or 0)
     DatabindingAddDataBool(entry, "frontAddSlotTextureVisible", data.FrontAddSlotTextureVisible or data.FrontAddSlotTexture ~= nil)
-    DatabindingAddDataInt(entry, "frontSlotTexture", joaat(data.FrontSlotTexture or ""))
-    DatabindingAddDataInt(entry, "frontSlotTextureColour", joaat(data.FrontSlotTextureColour or "COLOR_WHITE"))
-    DatabindingAddDataInt(entry, "frontSlotTextureDict", joaat(data.FrontSlotTextureDictionary or ""))
+    DatabindingAddDataHash(entry, "frontSlotTexture", data.FrontSlotTexture or 0)
+    DatabindingAddDataHash(entry, "frontSlotTextureColour", data.FrontSlotTextureColour or "COLOR_WHITE")
+    DatabindingAddDataHash(entry, "frontSlotTextureDict", data.FrontSlotTextureDictionary or 0)
     DatabindingAddDataBool(entry, "frontSlotTextureVisible", data.FrontSlotTextureVisible or data.FrontSlotTexture ~= nil)
     DatabindingAddDataBool(entry, "uiItemNew", data.IsNew or false)
     DatabindingAddDataBool(entry, "uiItemSale", data.IsOnSale or false)
@@ -1715,9 +1705,9 @@ function ShopUI.Builder.FillStepperItem(entry, item)
     local data = item.Data or {}
     local id = item.Id
 
-    DatabindingAddDataInt(entry, "uiItemID", id)
+    DatabindingAddDataString(entry, "uiItemID", id)
     DatabindingAddDataString(entry, "uiItemType", "STEPPER")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_STEPPER_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_STEPPER_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", 0)
     DatabindingAddDataString(entry, "uiItemRawText", item.Label or "")
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
@@ -1742,8 +1732,8 @@ function ShopUI.Builder.FillStepperItem(entry, item)
     DatabindingAddDataBool(entry, "uiItemStepperEnabled", not ShopUI.IsItemDisabled(item))
     DatabindingAddDataString(entry, "uiItemStepperText", string.format("NSUI_%s_%s", id, value))
     DatabindingAddDataBool(entry, "uiItemTextureStepperVisible", data.StepperTextureVisible or data.StepperTexture ~= nil)
-    DatabindingAddDataHash(entry, "uiItemTextureStepperTexture", joaat(data.StepperTexture or ""))
-    DatabindingAddDataHash(entry, "uiItemTextureStepperTextureDictionary", joaat(data.StepperTextureDict or ""))
+    DatabindingAddDataHash(entry, "uiItemTextureStepperTexture", data.StepperTexture or 0)
+    DatabindingAddDataHash(entry, "uiItemTextureStepperTextureDictionary", data.StepperTextureDict or 0)
 
     return entry
 end
@@ -1751,9 +1741,9 @@ end
 function ShopUI.Builder.FillTextItem(entry, item)
     local data = item.Data or {}
 
-    DatabindingAddDataInt(entry, "uiItemID", item.Id)
+    DatabindingAddDataString(entry, "uiItemID", item.Id)
     DatabindingAddDataString(entry, "uiItemType", "TEXT")
-    DatabindingAddDataHash(entry, "uiItemGsui", joaat("GSUI_TEXT_LIST_ITEM"))
+    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_TEXT_LIST_ITEM")
     DatabindingAddDataHash(entry, "uiItemLabel", 0)
     DatabindingAddDataString(entry, "uiItemRawText", item.Label or "")
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
@@ -2135,9 +2125,9 @@ function ShopUI.Scene.SetItemInfo1(visible, text, centered, iconVisible, iconTex
     DatabindingAddDataString(datastore, "RawText", text or "")
 
     if centered == false then
-        DatabindingAddDataHash(datastore, "Style", joaat("MENU_TEXT_BODY_LEFT"))
+        DatabindingAddDataHash(datastore, "Style", "MENU_TEXT_BODY_LEFT")
     else
-        DatabindingAddDataHash(datastore, "Style", joaat("MENU_TEXT_BODY_CENTER"))
+        DatabindingAddDataHash(datastore, "Style", "MENU_TEXT_BODY_CENTER")
     end
 
     DatabindingAddDataBool(datastore, "IconVisible", iconVisible == true)
@@ -2145,7 +2135,7 @@ function ShopUI.Scene.SetItemInfo1(visible, text, centered, iconVisible, iconTex
     if iconVisible == true then
         DatabindingAddDataString(datastore, "TextureDictionary", iconTextureDict or "")
         DatabindingAddDataString(datastore, "Texture", iconTexture or "")
-        DatabindingAddDataHash(datastore, "Color", iconColor or joaat("COLOR_WHITE"))
+        DatabindingAddDataHash(datastore, "Color", iconColor or "COLOR_WHITE")
     end
 end
 
@@ -2161,7 +2151,7 @@ function ShopUI.Scene.SetItemInfo1FromItem(item)
             data.IconVisible == true,
             data.IconTextureDictionary or "",
             data.IconTexture or "",
-            data.IconColor and joaat(data.IconColor) or joaat("COLOR_WHITE")
+            data.IconColor or "COLOR_WHITE"
         )
 
         return true
@@ -2247,9 +2237,9 @@ function ShopUI.Scene.SetItemInfo2(visible, text, centered, iconVisible, iconTex
     DatabindingAddDataString(datastore, "RawText", text or "")
 
     if centered == false then
-        DatabindingAddDataHash(datastore, "Style", joaat("MENU_TEXT_BODY_LEFT"))
+        DatabindingAddDataHash(datastore, "Style", "MENU_TEXT_BODY_LEFT")
     else
-        DatabindingAddDataHash(datastore, "Style", joaat("MENU_TEXT_BODY_CENTER"))
+        DatabindingAddDataHash(datastore, "Style", "MENU_TEXT_BODY_CENTER")
     end
 
     DatabindingAddDataBool(datastore, "IconVisible", iconVisible == true)
@@ -2298,7 +2288,7 @@ function ShopUI.Scene.SetPriceDetails(priceType, visible, price, tokens, salePri
     DatabindingAddDataBool(datastore, "isGoldPrice", gold == true)
     DatabindingAddDataBool(datastore, "modifiedPriceVisible", gold ~= true and onSale)
     DatabindingAddDataBool(datastore, "modifiedPriceGold", gold == true and onSale)
-    DatabindingAddDataInt(datastore, "purchaseModifiedPrice", onSale)
+    DatabindingAddDataInt(datastore, "purchaseModifiedPrice", salePrice)
     DatabindingAddDataBool(datastore, "isAffordable", affordable == true)
 
     DatabindingAddDataString(datastore, "purchaseLabel", leftText or "")
