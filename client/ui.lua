@@ -109,7 +109,7 @@ function ShopUI.Initialize()
     -- Palettes
     DatabindingAddDataBool(main, "ItemPalettePriceVisible", false)
     DatabindingAddDataBool(main, "uiPaletteVisible", false)
-    DatabindingAddDataHash(main, "ItemPaletteItemName", 0)
+    DatabindingAddDataHash(main, "ItemPaletteItemName", -1)
     DatabindingAddDataInt(main, "currentPaletteIndex", 0)
     DatabindingAddDataInt(main, "paletteItemCount", 0)
     ShopUI.bindings.dsuPaletteItemList = DatabindingAddUiItemList(main, "ItemPaletteList")
@@ -133,6 +133,8 @@ function ShopUI.Initialize()
     ShopUI.bindings.dscPriceDetails = DatabindingAddDataContainer(scene, "price_details")
     ShopUI.bindings.dsuSceneSaddleStats = DatabindingAddUiItemList(scene, "SaddleStats")
     ShopUI.bindings.dsuSceneStirrupStats = DatabindingAddUiItemList(scene, "StirrupStats")
+    DatabindingAddDataBool(scene, "SliderLeftArrowEnabled", false)
+    DatabindingAddDataBool(scene, "SliderRightArrowEnabled", false)
 
     -- Business bindings in scene
     local sceneBusiness = DatabindingAddDataContainer(scene, "Business")
@@ -219,7 +221,7 @@ end
 
 function ShopUI.CreatePaletteItemListBinding()
     if DatabindingIsEntryValid(ShopUI.bindings.dsuPaletteItemList) ~= 1 then
-        ShopUI.bindings.dsuPaletteItemList = DatabindingAddUiItemListByHash(ShopUI.bindings.dscMain, 924730110)
+        ShopUI.bindings.dsuPaletteItemList = DatabindingAddUiItemList(ShopUI.bindings.dscMain, "ItemPaletteList")
     else
         DatabindingClearBindingArray(ShopUI.bindings.dsuPaletteItemList)
     end
@@ -228,7 +230,7 @@ function ShopUI.CreatePaletteItemListBinding()
         DatabindingRemoveDataEntry(ShopUI.bindings.dscPaletteItemListEntries)
     end
 
-    ShopUI.bindings.dscPaletteItemListEntries = DatabindingAddDataContainerByHash(ShopUI.bindings.dscMain, -248239712)
+    ShopUI.bindings.dscPaletteItemListEntries = DatabindingAddDataContainer(ShopUI.bindings.dscMain, "ItemPaletteEntries")
 end
 
 function ShopUI.CreateRecipeItemListBinding()
@@ -391,6 +393,18 @@ function ShopUI.RefreshAllItems()
             if result == false then
                 print("[NativeShop] Error: Failed to refresh item: " .. tostring(currentItem.Id))
             end
+        end
+    end
+end
+
+function ShopUI.RefreshItem(id)
+    local entry = ShopUI.state.currentItemEntries[id]
+    local currentItem = ShopNavigator:getItemById(id)
+
+    if currentItem and DatabindingIsEntryValid(entry) == 1 then
+        local result = ShopUI.Builder.FillItem(entry, currentItem)
+        if result == false then
+            print("[NativeShop] Error: Failed to refresh item: " .. tostring(currentItem.Id))
         end
     end
 end
@@ -721,6 +735,7 @@ end
 
 function ShopUI.Events.HandleItemListColourPaletteFocus(item)
     local showSceneFooter = false
+    local showPalette = false
 
     if ShopUI.Scene.SetSaddleStatsFromItem(item) then
         showSceneFooter = true
@@ -730,7 +745,12 @@ function ShopUI.Events.HandleItemListColourPaletteFocus(item)
         showSceneFooter = true
     end
 
+    if ShopUI.Scene.SetPaletteFromItem(item) then
+        showPalette = true
+    end
+
     ShopUI.Scene.SetSceneFooterVisible(showSceneFooter)
+    ShopUI.Scene.SetPaletteVisible(showPalette)
     ShopUI.Scene.SetPriceDetailsFromItem(item)
 end
 
@@ -1036,60 +1056,118 @@ function ShopUI.Events.HandleStepperChange()
     local data = item.Data or {}
     if not id then return true end
 
+    local main = ShopUI.bindings.dscMain
     local scene = ShopUI.bindings.dscScene
 
-    if scene and DatabindingReadDataBoolFromParent(scene, "SliderVisible") == 1 then
+    if DatabindingReadDataBoolFromParent(scene, "SliderVisible") == 1 then
         local index = DatabindingReadDataIntFromParent(scene, "SliderCurrent")
         local max = DatabindingReadDataIntFromParent(scene, "SliderInputMax")
         local change = ShopEvents.state.adjustableIndex
 
+        -- Calculate the new index
         index = (index + change)
 
+        -- Clamp the index within bounds
         if (index > max) then
             index = max
         elseif (index < 1) then
             index = 1
         end
 
+        -- Update the item's value
+        if type(data.SliderInfo) == "table" and type(data.SliderInfo.Value) == "number" then
+            data.SliderInfo.Value = index
+        else
+            print("[NativeShop] Warning: Could not update palette value for: " .. tostring(id))
+        end
+
+        -- Update the data value
         DatabindingWriteDataIntFromParent(scene, "SliderCurrent", index)
         DatabindingWriteDataBoolFromParent(scene, "SliderLeftArrowEnabled", index > 1)
         DatabindingWriteDataBoolFromParent(scene, "SliderRightArrowEnabled", index < max)
-    elseif data.StepperOptions then
+
+        -- Refresh the item in case it depends on the value
+        ShopUI.RefreshItem(id)
+
+        -- Notify listeners about the change
+        TriggerEvent("native_shop:adjustable_changed", {
+            ID = id,
+            Index = focusIndex,
+            Item = item,
+            Value = index,
+            Type = "SLIDER",
+        })
+    elseif DatabindingReadDataBoolFromParent(main, "uiPaletteVisible") == 1 then
+        local index = DatabindingReadDataIntFromParent(main, "currentPaletteIndex")
+        local max = DatabindingReadDataIntFromParent(main, "paletteItemCount")
+        local change = ShopEvents.state.adjustableIndex
+
+        -- Calculate the new index
+        index = (index + change)
+
+        -- Clamp the index within bounds
+        if (index >= max) then
+            index = (max - 1)
+        elseif (index < 0) then
+            index = 0
+        end
+
+        -- Update the item's value
+        if type(data.Palette) == "table" and type(data.Palette.Value) == "number" then
+            data.Palette.Value = index + 1
+        else
+            print("[NativeShop] Warning: Could not update palette value for: " .. tostring(id))
+        end
+
+        -- Update the data value
+        DatabindingWriteDataIntFromParent(main, "currentPaletteIndex", index)
+        DatabindingWriteDataBoolFromParent(scene, "SliderLeftArrowEnabled", index > 1)
+        DatabindingWriteDataBoolFromParent(scene, "SliderRightArrowEnabled", index < max)
+        DatabindingAddDataHash(main, "ItemPaletteItemName", string.format("NSUI_%s_%s", id, index + 1))
+
+        -- Refresh the item in case it depends on the value
+        ShopUI.RefreshItem(id)
+
+        -- Notify listeners about the change
+        TriggerEvent("native_shop:adjustable_changed", {
+            ID = id,
+            Index = focusIndex,
+            Item = item,
+            Value = index + 1,
+            Type = "PALETTE",
+        })
+    elseif DatabindingReadDataBoolFromParent(datastore, "uiItemStepperVisible") == 1 then
         local index = DatabindingReadDataIntFromParent(datastore, "uiItemStepperValue")
         local max = DatabindingReadDataIntFromParent(datastore, "uiItemStepperMax")
         local change = ShopEvents.state.adjustableIndex
 
+        -- Calculate the new index
         index = (index + change)
 
+        -- Wrap the index within bounds
         if (index >= max) then
             index = 0
         elseif (index < 0) then
             index = (max - 1)
         end
 
-        DatabindingWriteDataIntFromParent(datastore, "uiItemStepperValue", index)
-
-        local newIndex = index + 1
-        local stepperOption = data.StepperOptions[newIndex]
-        if not stepperOption then return true end
-
-        local usesTexture = DatabindingReadDataBoolFromParent(datastore, "uiItemTextureStepperVisible")
-
-        if type(stepperOption) == "table" and usesTexture then
-            DatabindingAddDataHash(datastore, "uiItemTextureStepperTexture", joaat(stepperOption.StepperTexture or ""))
-            DatabindingAddDataHash(datastore, "uiItemTextureStepperTextureDictionary", joaat(stepperOption.StepperTextureDict or ""))
+        -- Update the item's value
+        if type(data.StepperValue) == "number" then
+            data.StepperValue = index + 1
         else
-            DatabindingAddDataString(datastore, "uiItemStepperText", string.format("NSUI_%s_%s", id, newIndex))
+            print("[NativeShop] Warning: Could not update stepper value for: " .. tostring(id))
         end
 
-        data.StepperValue = newIndex
+        -- Refresh the item in case it depends on the value
+        ShopUI.RefreshItem(id)
 
-        TriggerEvent("native_shop:stepper_changed", {
+        -- Notify listeners about the change
+        TriggerEvent("native_shop:adjustable_changed", {
             ID = id,
             Index = focusIndex,
             Item = item,
-            StepperValue = newIndex,
-            StepperOption = stepperOption,
+            Value = index + 1,
+            Type = "STEPPER",
         })
     end
 
@@ -1405,7 +1483,7 @@ function ShopUI.Builder.IsIndexInSceneRange(index, start, range, total)
 end
 
 function ShopUI.Builder.BuildItem(index, item)
-    local entry = DatabindingAddDataContainerByHash(ShopUI.bindings.dscItemListEntries, item.Id)
+    local entry = DatabindingAddDataContainer(ShopUI.bindings.dscItemListEntries, item.Id)
     local result = ShopUI.Builder.FillItem(entry, item)
 
     -- Log an error if the item failed to build
@@ -1559,11 +1637,25 @@ function ShopUI.Builder.FillPaletteItem(entry, item)
     DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
 
     DatabindingAddDataBool(entry, "equipped", data.Equipped or false)
-    DatabindingAddDataString(entry, "iconTexture", data.IconTexture or "")
-    DatabindingAddDataString(entry, "iconTextureDict", data.IconTextureDictionary or "")
     DatabindingAddDataBool(entry, "iconVisible", data.IconVisible or data.IconTexture ~= nil)
     DatabindingAddDataBool(entry, "uiItemNew", data.IsNew or false)
     DatabindingAddDataBool(entry, "uiItemSale", data.IsOnSale or false)
+
+    if type(data.Palette) == "table" then
+        if data.IconTexture or data.IconTextureDictionary then
+            print("[NativeShop] Warning: Palette item '" .. tostring(id) .. "' has icon defined but will be overridden by palette selection.")
+        end
+
+        local value = data.Palette.Value or 1
+        local palette = data.Palette.Items or {}
+        local option = palette[value] or {}
+
+        DatabindingAddDataString(entry, "iconTexture", option.Texture or "")
+        DatabindingAddDataString(entry, "iconTextureDict", option.TextureDictionary or "")
+    else
+        DatabindingAddDataString(entry, "iconTexture", data.IconTexture or "")
+        DatabindingAddDataString(entry, "iconTextureDict", data.IconTextureDictionary or "")
+    end
 
     return entry
 end
@@ -1738,6 +1830,7 @@ function ShopUI.Prompts.UpdatePromptsFromItem(item)
     local type = item.Type
     local data = item.Data or {}
     local slider = data.SliderInfo or {}
+    local palette = data.Palette or {}
 
     local prompts = item.Prompts or {}
     local selectData = prompts.Select or {}
@@ -1816,6 +1909,14 @@ function ShopUI.Prompts.UpdatePromptsFromItem(item)
         ShopUI.Prompts.SetPromptLabel(5, label)
         ShopUI.Prompts.SetPromptEnabled(5, not isItemDisabled and enabled)
         ShopUI.Prompts.SetPromptVisible(5, visible)
+        ShopUI.Prompts.SetPromptHeld(5, false)
+    elseif menu.Scene == "ITEM_LIST_COLOUR_PALETTE" or menu.Scene == "ITEM_LIST_COLOUR_PALETTE_COMBO" then
+        local label = adjustData.Label or GetStringFromHashKey("IB_ADJUST")
+        local enabled = palette and palette.Items and #palette.Items > 0
+
+        ShopUI.Prompts.SetPromptLabel(5, label)
+        ShopUI.Prompts.SetPromptEnabled(5, not isItemDisabled and enabled)
+        ShopUI.Prompts.SetPromptVisible(5, true)
         ShopUI.Prompts.SetPromptHeld(5, false)
     elseif type == "STEPPER" and data.StepperVisible then
         local label = adjustData.Label or GetStringFromHashKey("IB_ADJUST")
@@ -1977,6 +2078,10 @@ end
 
 function ShopUI.Scene.SetInfoBoxVisible(visible)
     DatabindingAddDataBool(ShopUI.bindings.dscMain, "InfoBoxVisible", visible == true)
+end
+
+function ShopUI.Scene.SetPaletteVisible(visible)
+    DatabindingAddDataBool(ShopUI.bindings.dscMain, "uiPaletteVisible", visible == true)
 end
 
 function ShopUI.Scene.SetItemDescription(visible, enabled, text)
@@ -2368,16 +2473,16 @@ function ShopUI.Scene.SetSaddleStats(visible, items)
 
     for index, value in ipairs(items) do
         local entry = DatabindingAddDataContainer(ShopUI.bindings.dsuSceneSaddleStats, string.format("stat_attribute_item_%d", index))
-        DatabindingAddDataBool(entry, "isRowActive", value.Enabled ~= true);
-        DatabindingAddDataBool(entry, "isIconVisible", value.IconVisible == true);
-        DatabindingAddDataString(entry, "iconTXD", value.IconTextureDictionary or "");
-        DatabindingAddDataString(entry, "iconTexture", value.IconTexture or "");
-        DatabindingAddDataString(entry, "label", value.Text or "");
-        DatabindingAddDataString(entry, "value", value.Value or "");
-        DatabindingAddDataBool(entry, "isEndIconVisible", value.EndIconVisible == true);
-        DatabindingAddDataString(entry, "endIconTXD", value.EndIconTextureDictionary or "");
-        DatabindingAddDataString(entry, "endIconTexture", value.EndIconTexture or "");
-        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuSceneSaddleStats, -1, "stat_attribute_item", entry);
+        DatabindingAddDataBool(entry, "isRowActive", value.Enabled ~= true)
+        DatabindingAddDataBool(entry, "isIconVisible", value.IconVisible == true)
+        DatabindingAddDataString(entry, "iconTXD", value.IconTextureDictionary or "")
+        DatabindingAddDataString(entry, "iconTexture", value.IconTexture or "")
+        DatabindingAddDataString(entry, "label", value.Text or "")
+        DatabindingAddDataString(entry, "value", value.Value or "")
+        DatabindingAddDataBool(entry, "isEndIconVisible", value.EndIconVisible == true)
+        DatabindingAddDataString(entry, "endIconTXD", value.EndIconTextureDictionary or "")
+        DatabindingAddDataString(entry, "endIconTexture", value.EndIconTexture or "")
+        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuSceneSaddleStats, -1, "stat_attribute_item", entry)
     end
 end
 
@@ -2435,16 +2540,16 @@ function ShopUI.Scene.SetStirrupStats(visible, speed, acceleration, items)
 
     for index, value in ipairs(items) do
         local entry = DatabindingAddDataContainer(ShopUI.bindings.dsuSceneStirrupStats, string.format("stat_attribute_item_%d", index))
-        DatabindingAddDataBool(entry, "isRowActive", value.Enabled ~= true);
-        DatabindingAddDataBool(entry, "isIconVisible", value.IconVisible == true);
-        DatabindingAddDataString(entry, "iconTXD", value.IconTextureDictionary or "");
-        DatabindingAddDataString(entry, "iconTexture", value.IconTexture or "");
-        DatabindingAddDataString(entry, "label", value.Text or "");
-        DatabindingAddDataString(entry, "value", value.Value or "");
-        DatabindingAddDataBool(entry, "isEndIconVisible", value.EndIconVisible == true);
-        DatabindingAddDataString(entry, "endIconTXD", value.EndIconTextureDictionary or "");
-        DatabindingAddDataString(entry, "endIconTexture", value.EndIconTexture or "");
-        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuSceneStirrupStats, -1, "stat_attribute_item", entry);
+        DatabindingAddDataBool(entry, "isRowActive", value.Enabled ~= true)
+        DatabindingAddDataBool(entry, "isIconVisible", value.IconVisible == true)
+        DatabindingAddDataString(entry, "iconTXD", value.IconTextureDictionary or "")
+        DatabindingAddDataString(entry, "iconTexture", value.IconTexture or "")
+        DatabindingAddDataString(entry, "label", value.Text or "")
+        DatabindingAddDataString(entry, "value", value.Value or "")
+        DatabindingAddDataBool(entry, "isEndIconVisible", value.EndIconVisible == true)
+        DatabindingAddDataString(entry, "endIconTXD", value.EndIconTextureDictionary or "")
+        DatabindingAddDataString(entry, "endIconTexture", value.EndIconTexture or "")
+        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuSceneStirrupStats, -1, "stat_attribute_item", entry)
     end
 end
 
@@ -2573,17 +2678,17 @@ function ShopUI.Scene.SetRecipeFooter(visible, titleType, items)
         local count = value.Count or 0
 
         local textEntry = DatabindingAddDataContainer(ShopUI.bindings.dsuItemRecipeTextList, string.format("recipeListItem_%d", index))
-        DatabindingAddDataString(textEntry, "itemName", value.Name or "");
-        DatabindingAddDataBool(textEntry, "enabled", value.Enabled == true);
-        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuItemRecipeTextList, -1, "recipeListItem", textEntry);
+        DatabindingAddDataString(textEntry, "itemName", value.Name or "")
+        DatabindingAddDataBool(textEntry, "enabled", value.Enabled == true)
+        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuItemRecipeTextList, -1, "recipeListItem", textEntry)
 
         local imageEntry = DatabindingAddDataContainer(ShopUI.bindings.dsuItemRecipeImageList, string.format("recipeImageItem_%d", index))
-        DatabindingAddDataHash(imageEntry, "textureDictionary", value.TextureDictionary or 0);
-        DatabindingAddDataHash(imageEntry, "texture", value.Texture or 0);
-        DatabindingAddDataInt(imageEntry, "count", count);
-        DatabindingAddDataBool(imageEntry, "visible", count > 1);
-        DatabindingAddDataBool(imageEntry, "enabled", value.Enabled == true);
-        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuItemRecipeImageList, -1, "recipeImageItem", imageEntry);
+        DatabindingAddDataHash(imageEntry, "textureDictionary", value.TextureDictionary or 0)
+        DatabindingAddDataHash(imageEntry, "texture", value.Texture or 0)
+        DatabindingAddDataInt(imageEntry, "count", count)
+        DatabindingAddDataBool(imageEntry, "visible", count > 1)
+        DatabindingAddDataBool(imageEntry, "enabled", value.Enabled == true)
+        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuItemRecipeImageList, -1, "recipeImageItem", imageEntry)
     end
 end
 
@@ -2764,7 +2869,59 @@ function ShopUI.Scene.SetBusinessInfoFromItem(item)
     return false
 end
 
-function ShopUI.Scene.SetPlayerHorseInfo(stats)
+function ShopUI.Scene.SetPalette(id, value, items)
+    if not id then id = "default" end
+    if not value then value = 1 end
+    if type(items) ~= "table" then items = {} end
+
+    local datastore = ShopUI.bindings.dscMain
+    DatabindingAddDataInt(datastore, "currentPaletteIndex", value - 1)
+    DatabindingAddDataInt(datastore, "paletteItemCount", #items)
+    DatabindingAddDataHash(datastore, "ItemPaletteItemName", string.format("NSUI_%s_%s", id, value))
+
+    local scene = ShopUI.bindings.dscScene
+    DatabindingAddDataBool(scene, "SliderLeftArrowEnabled", value > 1)
+    DatabindingAddDataBool(scene, "SliderRightArrowEnabled", value < #items)
+
+    -- Refresh the palette UI lists
+    ShopUI.CreatePaletteItemListBinding()
+
+    for index, item in ipairs(items) do
+        local key = ShopUI.CreateTextEntry(id, index, item.Text or "")
+
+        local entry = DatabindingAddDataContainer(ShopUI.bindings.dscPaletteItemListEntries, string.format("paletteEntry_%d", index))
+        DatabindingAddDataBool(entry, "visible", item.Visible == true)
+        DatabindingAddDataString(entry, "textureDictionary", item.TextureDictionary or "")
+        DatabindingAddDataString(entry, "texture", item.Texture or "")
+        DatabindingAddDataBool(entry, "uiItemNew", item.New == true)
+        DatabindingAddDataBool(entry, "owned", item.Owned == true)
+        DatabindingAddDataBool(entry, "equipped", item.Equipped == true)
+        DatabindingAddDataBool(entry, "locked", item.Locked == true)
+        DatabindingAddDataBool(entry, "itemEnabled", item.Visible == true)
+        DatabindingAddDataHash(entry, "itemName", key)
+
+        DatabindingInsertUiItemToListFromContextStringAlias(ShopUI.bindings.dsuPaletteItemList, -1, "GSUI_PALETTE_SWATCH_ITEM", entry)
+    end
+end
+
+function ShopUI.Scene.SetPaletteFromItem(item)
+    local itemData = item.Data or {}
+    local data = itemData.Palette
+
+    if data and type(data) == "table" then
+        ShopUI.Scene.SetPalette(
+            item.Id,
+            data.Value or 1,
+            data.Items or {}
+        )
+        return true
+    end
+
+    ShopUI.Scene.ClearPalette()
+    return false
+end
+
+function ShopUI.Scene.SetPlayerHorseInfo(_)
     -- TODO: How does these work? They're not databinding...
     -- playerInfo.horseInfo.stamina
     -- playerInfo.horseInfo.staminaCore
@@ -2964,9 +3121,9 @@ function ShopUI.Scene.ClearSliderInfo()
         false, -- visible
         false, -- enabled
         0,     -- value
-        0,      -- maxValue
+        0,     -- maxValue
         0,     -- totalTanks
-        0     -- activeTanks
+        0      -- activeTanks
     )
 end
 
@@ -2994,11 +3151,20 @@ function ShopUI.Scene.ClearBusinessInfo()
     ShopUI.Scene.ClearPriceDetails("BUSINESS")
 end
 
+function ShopUI.Scene.ClearPalette()
+    ShopUI.Scene.SetPalette(
+        "", -- id
+        1,  -- value
+        {}  -- items
+    )
+end
+
 function ShopUI.Scene.FullClear()
     ShopUI.Scene.SetSceneFooterVisible(false)
     ShopUI.Scene.SetItemPriceFooterVisible(false)
     ShopUI.Scene.SetStatsVisible(false)
     ShopUI.Scene.SetWeaponStatsVisible(false)
+    ShopUI.Scene.SetPaletteVisible(false)
 
     ShopUI.Scene.ClearInfoBoxName()
     ShopUI.Scene.ClearItemDescription()
@@ -3017,6 +3183,7 @@ function ShopUI.Scene.FullClear()
     ShopUI.Scene.ClearRpgEffects()
     ShopUI.Scene.ClearSliderInfo()
     ShopUI.Scene.ClearBusinessInfo()
+    ShopUI.Scene.ClearPalette()
 end
 
 _G.ShopUI = ShopUI

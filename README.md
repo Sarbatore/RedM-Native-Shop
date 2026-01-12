@@ -68,8 +68,8 @@ AddEventHandler("native_shop:item_action", function(data)
     print("Item Action Event:", json.encode(data))
 end)
 
-AddEventHandler("native_shop:stepper_changed", function(data)
-    print("Stepper Changed Event:", json.encode(data))
+AddEventHandler("native_shop:adjustable_changed", function(data)
+    print("Adjustable Changed Event:", json.encode(data))
 end)
 
 AddEventHandler("native_shop:item_focused", function(data)

@@ -231,24 +231,15 @@ Citizen.CreateThread(function()
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_FILTER_CHANGED)
                     ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventId == joaat("DATA_ADJUSTABLE_CHANGED") then
-                    if hashParameter == joaat("GENERIC_SHOP_UI_PALETTE_FOCUS") then
-                        ShopEvents.state.paletteIndex = intParameter
+                    ShopEvents.state.adjustableIndex = intParameter
+                    ShopEvents.state.adjustableParameter = hashParameter
 
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_PALETTE_CHANGED)
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_UNFOCUSED)
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_FOCUSED)
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-                    else
-                        ShopEvents.state.adjustableIndex = intParameter
-                        ShopEvents.state.adjustableParameter = hashParameter
-
-                        if DatabindingIsEntryValid(datastoreId) == 1 then
-                            ShopEvents.state.focusedDatastore = datastoreId
-                        end
-
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE)
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    if DatabindingIsEntryValid(datastoreId) == 1 then
+                        ShopEvents.state.focusedDatastore = datastoreId
                     end
+
+                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE)
+                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventId == joaat("ITEM_FOCUSED") then
                     ShopEvents.state.focusedDatastore = datastoreId
                     ShopEvents.state.focusedIndex = intParameter

@@ -18,7 +18,6 @@ local function getItems(id)
                     IconVisible = true,
                     IconTextureDictionary = "MENU_TEXTURES",
                     IconTexture = "MENU_ICON_TICK",
-                    IconColor = joaat("COLOR_GOLD"),
                 }
             }
         },
@@ -357,6 +356,23 @@ local function getItems(id)
                             EndIconTextureDictionary = "MENU_TEXTURES",
                             EndIconTexture = "MENU_ICON_TICK",
                         }
+                    }
+                }
+            }
+        },
+        {
+            Id = id .. "_PALETTE",
+            Label = "Palette",
+            Type = "PALETTE",
+            Data = {
+                IconVisible = true,
+                Palette = {
+                    Value = 1,
+                    Items = {
+                        { Visible = true, Text = "Palette item 1", TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK", New = false, Owned = true,  Equipped = true,  Locked = false },
+                        { Visible = true, Text = "Palette item 2", TextureDictionary = "MENU_TEXTURES", Texture = "CLUB", New = true,  Owned = true,  Equipped = false, Locked = false },
+                        { Visible = true, Text = "Palette item 3", TextureDictionary = "MENU_TEXTURES", Texture = "DIAMOND", New = false, Owned = false, Equipped = false, Locked = true },
+                        { Visible = true, Text = "Palette item 4", TextureDictionary = "MENU_TEXTURES", Texture = "CROSS", New = false, Owned = false, Equipped = false, Locked = false },
                     }
                 }
             }
