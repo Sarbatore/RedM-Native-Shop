@@ -6,6 +6,7 @@ ShopData.state = {
     hasUiInitialized = false,
     hasEnteredFirstScene = false,
     entryFocusIndex = 1,
+    pedForHorseStats = nil,
 }
 
 function MaintainEvents()
@@ -67,6 +68,16 @@ function MaintainEvents()
             if IsCameraAvailable(struct:Buffer()) ~= 1 then
                 CamCreate(struct:Buffer())
             end
+        end
+    end
+
+    -- Update horse stats if a ped is available
+    if ShopData.state.pedForHorseStats and not ShopData.state.shuttingDown then
+        if DoesEntityExist(ShopData.state.pedForHorseStats) == 1 then
+            -- This is certainly one part of it, but not the whole thing, still todo
+            Citizen.InvokeNative(0x3FE4FB41EF7D2196, ShopData.state.pedForHorseStats)
+        else
+            ShopData.state.pedForHorseStats = nil
         end
     end
 

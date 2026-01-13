@@ -2342,7 +2342,7 @@ function ShopUI.Scene.SetPriceDetailsFromItem(item, priceType)
     return false
 end
 
-function ShopUI.Scene.SetHorseStats(primary, meters, speed, acceleration, handlingText, typeText, breedText, coatText, genderText)
+function ShopUI.Scene.SetHorseStats(primary, speed, acceleration, handlingText, typeText, breedText, coatText, genderText)
     if type(speed) ~= "table" then speed = {} end
     if type(acceleration) ~= "table" then acceleration = {} end
 
@@ -2382,8 +2382,6 @@ function ShopUI.Scene.SetHorseStats(primary, meters, speed, acceleration, handli
         DatabindingAddDataHash(datastore, "HorseCoat", coatText or 0)
         DatabindingAddDataHash(datastore, "HorseGender", genderText or 0)
     end
-
-    ShopUI.Scene.SetPlayerHorseInfo(meters)
 end
 
 function ShopUI.Scene.SetHorseStatsFromItem(item)
@@ -2399,7 +2397,6 @@ function ShopUI.Scene.SetHorseStatsFromItem(item)
 
         ShopUI.Scene.SetHorseStats(
             data.Primary == true,
-            data.Meters or {},
             data.Speed or {},
             data.Acceleration or {},
             handlingKey,
@@ -2425,8 +2422,6 @@ function ShopUI.Scene.SetHorseInfoBox(visible, stats, text, description, tipText
     DatabindingAddDataString(datastore, "itemDescription", description or "")
     DatabindingAddDataHash(datastore, "itemTipText", 0)
     DatabindingAddDataString(datastore, "itemRawTipText", tipText or "")
-
-    ShopUI.Scene.SetPlayerHorseInfo({})
 end
 
 function ShopUI.Scene.SetHorseInfoBoxFromItem(item)
@@ -2911,15 +2906,6 @@ function ShopUI.Scene.SetPaletteFromItem(item)
     return false
 end
 
-function ShopUI.Scene.SetPlayerHorseInfo(_)
-    -- TODO: How does these work? They're not databinding...
-    -- playerInfo.horseInfo.stamina
-    -- playerInfo.horseInfo.staminaCore
-    -- playerInfo.horseInfo.health
-    -- playerInfo.horseInfo.healthCore
-    -- playerInfo.horseInfo.bondingLevel
-end
-
 function ShopUI.Scene.ClearFooter()
     ShopUI.Scene.SetFooter("")
 end
@@ -2999,13 +2985,6 @@ function ShopUI.Scene.ClearHorseStats()
     ShopUI.Scene.SetStatsVisible(false)
     ShopUI.Scene.SetHorseStats(
         true, -- primary
-        {     -- meters
-            Bonding = 0,
-            Stamina = 0,
-            StaminaCore = 0,
-            Health = 0,
-            HealthCore = 0,
-        },
         { -- speed
             Value = 0,
             MinValue = 0,

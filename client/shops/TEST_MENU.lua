@@ -82,13 +82,6 @@ local function getItems(id)
             Data = {
                 HorseStats = {
                     Primary = true,
-                    Meters = {
-                        Bonding = 1,
-                        Stamina = 7,
-                        StaminaCore = 6,
-                        Health = 8,
-                        HealthCore = 4,
-                    },
                     Speed = {
                         Value = 5,
                         MinValue = 0,
@@ -566,13 +559,6 @@ local function getMenu()
                 },
                 HorseStats = {
                     Primary = false,
-                    Meters = {
-                        Bonding = 1,
-                        Stamina = 7,
-                        StaminaCore = 6,
-                        Health = 8,
-                        HealthCore = 4,
-                    },
                     Speed = {
                         Value = 5,
                         MinValue = 0,
