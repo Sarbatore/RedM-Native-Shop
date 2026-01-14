@@ -994,12 +994,15 @@ function ShopUI.Events.HandleSaddleManagementFocus(item)
 end
 
 function ShopUI.Events.HandleVehicleManagementFocus(item)
+    local showSceneFooter = false
     local showSceneStats = false
 
     if ShopUI.Scene.SetVehicleStatsFromItem(item) then
+        showSceneFooter = true
         showSceneStats = true
     end
 
+    ShopUI.Scene.SetSceneFooterVisible(showSceneFooter)
     ShopUI.Scene.SetStatsVisible(showSceneStats)
     ShopUI.Scene.SetPriceDetailsFromItem(item)
 end

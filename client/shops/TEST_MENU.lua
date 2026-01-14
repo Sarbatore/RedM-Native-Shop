@@ -11,12 +11,267 @@ local function getItems(id)
         Rank = 25
     }
 
+    local description = "A test item description for the item being displayed in the shop menu."
+
+    local itemInfo1 = {
+        Visible = true,
+        Text = "Item Info 1 Text",
+        Centered = true,
+        IconVisible = true,
+        IconTextureDictionary = "MENU_TEXTURES",
+        IconTexture = "MENU_ICON_TICK",
+    }
+
+    local itemInfo2 = {
+        Visible = true,
+        Text = "Item Info 2 Text",
+        Centered = false,
+        IconVisible = true,
+        IconTextureDictionary = "MENU_TEXTURES",
+        IconTexture = "MENU_ICON_TICK",
+    }
+
+    local weather = {
+        Visible = true,
+        Enabled = true,
+        Opacity = 1,
+        Warmth = 4
+    }
+
+    local outfitWeather = {
+        Visible = true,
+        Enabled = true,
+        Opacity = 1,
+        Effectiveness = 2
+    }
+
+    local horseStats = {
+        Primary = true,
+        Speed = {
+            Value = 5,
+            MinValue = 0,
+            MaxValue = 10,
+            CapacityValue = 7,
+            CapacityMinValue = 0,
+            CapacityMaxValue = 10,
+            EquipmentValue = 6,
+            EquipmentMinValue = 0,
+            EquipmentMaxValue = 10,
+        },
+        Acceleration = {
+            Value = 5,
+            MinValue = 0,
+            MaxValue = 10,
+            CapacityValue = 7,
+            CapacityMinValue = 0,
+            CapacityMaxValue = 10,
+            EquipmentValue = 6,
+            EquipmentMinValue = 0,
+            EquipmentMaxValue = 10,
+        },
+        HandlingText = "Test Handling",
+        TypeText = "Test Type",
+        BreedText = "Test Breed",
+        CoatText = "Test Coat",
+        GenderText = "Test Gender",
+    }
+
+    local vehicleStats = {
+        Primary = true,
+        MaxSpeed = "Test MaxSpeed",
+        Acceleration = "Test Acceleration",
+        Steering = "Test Steering",
+        Description = "Test Description",
+    }
+
+    local weaponStats = {
+        Power = { Value = 50, Diff = 75, New = 25 },
+        Range = { Value = 50, Diff = 75, New = 25 },
+        Accuracy = { Value = 50, Diff = 75, New = 25 },
+        FireRate = { Value = 50, Diff = 75, New = 25 },
+        Reload = { Value = 50, Diff = 75, New = 25 },
+    }
+
+    local rpgEffects = {
+        Health = { Value = 4, Duration = 0 },
+        Stamina = { Value = 4, Duration = 0 },
+        Deadeye = { Value = 4, Duration = 0 },
+        HealthCore = { Value = 4, Duration = 0 },
+        StaminaCore = { Value = 4, Duration = 0 },
+        DeadeyeCore = { Value = 4, Duration = 0 },
+        HealthHorse = { Value = 4, Duration = 0 },
+        StaminaHorse = { Value = 4, Duration = 0 },
+        HealthCoreHorse = { Value = 4, Duration = 0 },
+        StaminaCoreHorse = { Value = 4, Duration = 0 },
+    }
+
+    local sliderInfo = {
+        Visible = true,
+        Enabled = true,
+        Value = 1,
+        MaxValue = 6,
+        TotalTanks = 10,
+        ActiveTanks = 5,
+    }
+
+    local businessInfo = {
+        Visible = true,
+        Description = "This is a test business description.",
+        MaterialsIconDictionary = "MENU_TEXTURES",
+        MaterialsIcon = "MENU_ICON_TICK",
+        ProductionIconDictionary = "MENU_TEXTURES",
+        ProductionIcon = "MENU_ICON_TICK",
+        GoodsIconDictionary = "MENU_TEXTURES",
+        GoodsIcon = "MENU_ICON_TICK",
+    }
+
+    local recipeFooter = {
+        Visible = true,
+        TitleType = 0,
+        Items = {
+            { Enabled = true,  Name = "Test Item 1", Count = 1, TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK" },
+            { Enabled = true,  Name = "Test Item 2", Count = 2, TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK" },
+            { Enabled = false, Name = "Test Item 3", Count = 3, TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK" },
+        }
+    }
+
+    local saddleStats = {
+        Visible = true,
+        Items = {
+            {
+                Enabled = true,
+                IconVisible = true,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Saddle Stat 1",
+                Value = "Value 1",
+                EndIconVisible = true,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            },
+            {
+                Enabled = true,
+                IconVisible = false,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Saddle Stat 2",
+                Value = "Value 2",
+                EndIconVisible = true,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            },
+            {
+                Enabled = true,
+                IconVisible = true,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Saddle Stat 3",
+                Value = "Value 3",
+                EndIconVisible = false,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            },
+            {
+                Enabled = false,
+                IconVisible = true,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Saddle Stat 4",
+                Value = "Value 4",
+                EndIconVisible = true,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            }
+        }
+    }
+
+    local stirrupStats = {
+        Visible = true,
+        Speed = {
+            Value = 5,
+            MinValue = 0,
+            MaxValue = 10,
+            CapacityValue = 7,
+            CapacityMinValue = 0,
+            CapacityMaxValue = 10,
+            EquipmentValue = 6,
+            EquipmentMinValue = 0,
+            EquipmentMaxValue = 10,
+        },
+        Acceleration = {
+            Value = 5,
+            MinValue = 0,
+            MaxValue = 10,
+            CapacityValue = 7,
+            CapacityMinValue = 0,
+            CapacityMaxValue = 10,
+            EquipmentValue = 6,
+            EquipmentMinValue = 0,
+            EquipmentMaxValue = 10,
+        },
+        Items = {
+            {
+                Enabled = true,
+                IconVisible = true,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Stirrup Stat 1",
+                Value = "Value 1",
+                EndIconVisible = true,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            },
+            {
+                Enabled = true,
+                IconVisible = false,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Stirrup Stat 2",
+                Value = "Value 2",
+                EndIconVisible = true,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            },
+            {
+                Enabled = true,
+                IconVisible = true,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Stirrup Stat 3",
+                Value = "Value 3",
+                EndIconVisible = false,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            },
+            {
+                Enabled = false,
+                IconVisible = true,
+                IconTextureDictionary = "MENU_TEXTURES",
+                IconTexture = "MENU_ICON_TICK",
+                Text = "Stirrup Stat 4",
+                Value = "Value 4",
+                EndIconVisible = true,
+                EndIconTextureDictionary = "MENU_TEXTURES",
+                EndIconTexture = "MENU_ICON_TICK",
+            }
+        }
+    }
+
+    local palette = {
+        Value = 1,
+        Items = {
+            { Visible = true, Text = "Palette item 1", TextureDictionary = "MENU_TEXTURES", Texture = "CLUB",    New = true,  Owned = true,  Equipped = false, Locked = false },
+            { Visible = true, Text = "Palette item 2", TextureDictionary = "MENU_TEXTURES", Texture = "DIAMOND", New = false, Owned = false, Equipped = false, Locked = true },
+            { Visible = true, Text = "Palette item 3", TextureDictionary = "MENU_TEXTURES", Texture = "CROSS",   New = false, Owned = false, Equipped = false, Locked = false },
+        }
+    }
+
     return {
         {
             Id = id .. "_SET_ITEM_DESCRIPTION",
             Label = "Item description",
             Data = {
-                ItemDescription = "This is a test item description for SetItemDescription.",
+                ItemDescription = description,
                 Pricing = pricing
             }
         },
@@ -24,14 +279,7 @@ local function getItems(id)
             Id = id .. "_SET_ITEM_INFO1",
             Label = "Item info 1",
             Data = {
-                ItemInfo1 = {
-                    Visible = true,
-                    Text = "Item Info 1 Text",
-                    Centered = true,
-                    IconVisible = true,
-                    IconTextureDictionary = "MENU_TEXTURES",
-                    IconTexture = "MENU_ICON_TICK",
-                },
+                ItemInfo1 = itemInfo1,
                 Pricing = pricing
             }
         },
@@ -39,12 +287,7 @@ local function getItems(id)
             Id = id .. "_SET_ITEM_WEATHER",
             Label = "Item weather",
             Data = {
-                Weather = {
-                    Visible = true,
-                    Enabled = true,
-                    Opacity = 1,
-                    Warmth = 4
-                },
+                Weather = weather,
                 Pricing = pricing
             }
         },
@@ -52,12 +295,7 @@ local function getItems(id)
             Id = id .. "_SET_OUTFIT_WEATHER",
             Label = "Outfit weather",
             Data = {
-                OutfitWeather = {
-                    Visible = true,
-                    Enabled = true,
-                    Opacity = 1,
-                    Effectiveness = 2
-                },
+                OutfitWeather = outfitWeather,
                 Pricing = pricing
             }
         },
@@ -65,14 +303,7 @@ local function getItems(id)
             Id = id .. "_SET_ITEM_INFO2",
             Label = "Item info 2",
             Data = {
-                ItemInfo2 = {
-                    Visible = true,
-                    Text = "Item Info 2 Text",
-                    Centered = false,
-                    IconVisible = true,
-                    IconTextureDictionary = "MENU_TEXTURES",
-                    IconTexture = "MENU_ICON_TICK",
-                },
+                ItemInfo2 = itemInfo2,
                 Pricing = pricing
             }
         },
@@ -80,36 +311,7 @@ local function getItems(id)
             Id = id .. "_SET_HORSE_STATS",
             Label = "Horse stats",
             Data = {
-                HorseStats = {
-                    Primary = true,
-                    Speed = {
-                        Value = 5,
-                        MinValue = 0,
-                        MaxValue = 10,
-                        CapacityValue = 7,
-                        CapacityMinValue = 0,
-                        CapacityMaxValue = 10,
-                        EquipmentValue = 6,
-                        EquipmentMinValue = 0,
-                        EquipmentMaxValue = 10,
-                    },
-                    Acceleration = {
-                        Value = 5,
-                        MinValue = 0,
-                        MaxValue = 10,
-                        CapacityValue = 7,
-                        CapacityMinValue = 0,
-                        CapacityMaxValue = 10,
-                        EquipmentValue = 6,
-                        EquipmentMinValue = 0,
-                        EquipmentMaxValue = 10,
-                    },
-                    HandlingText = "Test Handling",
-                    TypeText = "Test Type",
-                    BreedText = "Test Breed",
-                    CoatText = "Test Coat",
-                    GenderText = "Test Gender",
-                },
+                HorseStats = horseStats,
                 Pricing = pricing
             }
         },
@@ -117,13 +319,7 @@ local function getItems(id)
             Id = id .. "_SET_VEHICLE_STATS",
             Label = "Vehicle stats",
             Data = {
-                VehicleStats = {
-                    Primary = true,
-                    MaxSpeed = "Test MaxSpeed",
-                    Acceleration = "Test Acceleration",
-                    Steering = "Test Steering",
-                    Description = "Test Description",
-                },
+                VehicleStats = vehicleStats,
                 Pricing = pricing
             }
         },
@@ -131,13 +327,7 @@ local function getItems(id)
             Id = id .. "_SET_WEAPON_STATS",
             Label = "Weapon stats",
             Data = {
-                WeaponStats = {
-                    Power = { Value = 50, Diff = 75, New = 25 },
-                    Range = { Value = 50, Diff = 75, New = 25 },
-                    Accuracy = { Value = 50, Diff = 75, New = 25 },
-                    FireRate = { Value = 50, Diff = 75, New = 25 },
-                    Reload = { Value = 50, Diff = 75, New = 25 },
-                },
+                WeaponStats = weaponStats,
                 Pricing = pricing
             }
         },
@@ -145,18 +335,7 @@ local function getItems(id)
             Id = id .. "_SET_RPG_EFFECTS",
             Label = "RPG effects",
             Data = {
-                RpgEffects = {
-                    Health = { Value = 4, Duration = 0 },
-                    Stamina = { Value = 4, Duration = 0 },
-                    Deadeye = { Value = 4, Duration = 0 },
-                    HealthCore = { Value = 4, Duration = 0 },
-                    StaminaCore = { Value = 4, Duration = 0 },
-                    DeadeyeCore = { Value = 4, Duration = 0 },
-                    HealthHorse = { Value = 4, Duration = 0 },
-                    StaminaHorse = { Value = 4, Duration = 0 },
-                    HealthCoreHorse = { Value = 4, Duration = 0 },
-                    StaminaCoreHorse = { Value = 4, Duration = 0 },
-                },
+                RpgEffects = rpgEffects,
                 Pricing = pricing
             }
         },
@@ -164,14 +343,7 @@ local function getItems(id)
             Id = id .. "_SET_SLIDER_INFO",
             Label = "Slider info",
             Data = {
-                SliderInfo = {
-                    Visible = true,
-                    Enabled = true,
-                    Value = 1,
-                    MaxValue = 6,
-                    TotalTanks = 10,
-                    ActiveTanks = 5,
-                },
+                SliderInfo = sliderInfo,
                 Pricing = pricing
             }
         },
@@ -179,16 +351,7 @@ local function getItems(id)
             Id = id .. "_SET_BUSINESS_INFO",
             Label = "Business info",
             Data = {
-                BusinessInfo = {
-                    Visible = true,
-                    Description = "This is a test business description.",
-                    MaterialsIconDictionary = "MENU_TEXTURES",
-                    MaterialsIcon = "MENU_ICON_TICK",
-                    ProductionIconDictionary = "MENU_TEXTURES",
-                    ProductionIcon = "MENU_ICON_TICK",
-                    GoodsIconDictionary = "MENU_TEXTURES",
-                    GoodsIcon = "MENU_ICON_TICK",
-                },
+                BusinessInfo = businessInfo,
                 Pricing = pricing
             }
         },
@@ -196,15 +359,7 @@ local function getItems(id)
             Id = id .. "_SET_RECIPE_FOOTER",
             Label = "Recipe footer",
             Data = {
-                RecipeFooter = {
-                    Visible = true,
-                    TitleType = 0,
-                    Items = {
-                        { Enabled = true,  Name = "Test Item 1", Count = 1, TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK" },
-                        { Enabled = true,  Name = "Test Item 2", Count = 2, TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK" },
-                        { Enabled = false, Name = "Test Item 3", Count = 3, TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK" },
-                    }
-                },
+                RecipeFooter = recipeFooter,
                 Pricing = pricing
             }
         },
@@ -212,55 +367,7 @@ local function getItems(id)
             Id = id .. "_SET_SADDLE_STATS",
             Label = "Saddle stats",
             Data = {
-                SaddleStats = {
-                    Visible = true,
-                    Items = {
-                        {
-                            Enabled = true,
-                            IconVisible = true,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Saddle Stat 1",
-                            Value = "Value 1",
-                            EndIconVisible = true,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        },
-                        {
-                            Enabled = true,
-                            IconVisible = false,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Saddle Stat 2",
-                            Value = "Value 2",
-                            EndIconVisible = true,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        },
-                        {
-                            Enabled = true,
-                            IconVisible = true,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Saddle Stat 3",
-                            Value = "Value 3",
-                            EndIconVisible = false,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        },
-                        {
-                            Enabled = false,
-                            IconVisible = true,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Saddle Stat 4",
-                            Value = "Value 4",
-                            EndIconVisible = true,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        }
-                    }
-                },
+                SaddleStats = saddleStats,
                 Pricing = pricing
             }
         },
@@ -268,77 +375,7 @@ local function getItems(id)
             Id = id .. "_SET_STIRRUP_STATS",
             Label = "Stirrup stats",
             Data = {
-                StirrupStats = {
-                    Visible = true,
-                    Speed = {
-                        Value = 5,
-                        MinValue = 0,
-                        MaxValue = 10,
-                        CapacityValue = 7,
-                        CapacityMinValue = 0,
-                        CapacityMaxValue = 10,
-                        EquipmentValue = 6,
-                        EquipmentMinValue = 0,
-                        EquipmentMaxValue = 10,
-                    },
-                    Acceleration = {
-                        Value = 5,
-                        MinValue = 0,
-                        MaxValue = 10,
-                        CapacityValue = 7,
-                        CapacityMinValue = 0,
-                        CapacityMaxValue = 10,
-                        EquipmentValue = 6,
-                        EquipmentMinValue = 0,
-                        EquipmentMaxValue = 10,
-                    },
-                    Items = {
-                        {
-                            Enabled = true,
-                            IconVisible = true,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Stirrup Stat 1",
-                            Value = "Value 1",
-                            EndIconVisible = true,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        },
-                        {
-                            Enabled = true,
-                            IconVisible = false,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Stirrup Stat 2",
-                            Value = "Value 2",
-                            EndIconVisible = true,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        },
-                        {
-                            Enabled = true,
-                            IconVisible = true,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Stirrup Stat 3",
-                            Value = "Value 3",
-                            EndIconVisible = false,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        },
-                        {
-                            Enabled = false,
-                            IconVisible = true,
-                            IconTextureDictionary = "MENU_TEXTURES",
-                            IconTexture = "MENU_ICON_TICK",
-                            Text = "Stirrup Stat 4",
-                            Value = "Value 4",
-                            EndIconVisible = true,
-                            EndIconTextureDictionary = "MENU_TEXTURES",
-                            EndIconTexture = "MENU_ICON_TICK",
-                        }
-                    }
-                },
+                StirrupStats = stirrupStats,
                 Pricing = pricing
             }
         },
@@ -348,16 +385,33 @@ local function getItems(id)
             Type = "PALETTE",
             Data = {
                 IconVisible = true,
-                Palette = {
-                    Value = 1,
-                    Items = {
-                        { Visible = true, Text = "Palette item 1", TextureDictionary = "MENU_TEXTURES", Texture = "MENU_ICON_TICK", New = false, Owned = true,  Equipped = true,  Locked = false },
-                        { Visible = true, Text = "Palette item 2", TextureDictionary = "MENU_TEXTURES", Texture = "CLUB",           New = true,  Owned = true,  Equipped = false, Locked = false },
-                        { Visible = true, Text = "Palette item 3", TextureDictionary = "MENU_TEXTURES", Texture = "DIAMOND",        New = false, Owned = false, Equipped = false, Locked = true },
-                        { Visible = true, Text = "Palette item 4", TextureDictionary = "MENU_TEXTURES", Texture = "CROSS",          New = false, Owned = false, Equipped = false, Locked = false },
-                    }
-                },
+                Palette = palette,
                 Pricing = pricing
+            }
+        },
+        {
+            Id = id .. "_EVERYTHING",
+            Label = "Everything",
+            Footer = "For illustration purposes, causes issues",
+            Type = "PALETTE",
+            Data = {
+                BusinessInfo = businessInfo,
+                HorseStats = horseStats,
+                IconVisible = true,
+                ItemDescription = description,
+                ItemInfo1 = itemInfo1,
+                ItemInfo2 = itemInfo2,
+                OutfitWeather = outfitWeather,
+                Palette = palette,
+                Pricing = pricing,
+                RecipeFooter = recipeFooter,
+                RpgEffects = rpgEffects,
+                SaddleStats = saddleStats,
+                SliderInfo = sliderInfo,
+                StirrupStats = stirrupStats,
+                VehicleStats = vehicleStats,
+                WeaponStats = weaponStats,
+                Weather = weather,
             }
         }
     }
