@@ -1,4 +1,8 @@
-local function getItems(id)
+local function getItems(id, shouldUseSwatch)
+    if not shouldUseSwatch then
+        shouldUseSwatch = false
+    end
+
     local pricing = {
         Price = 1000,
         Tokens = 1,
@@ -269,121 +273,180 @@ local function getItems(id)
     return {
         {
             Id = id .. "_SET_ITEM_DESCRIPTION",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Item description",
+            Footer = shouldUseSwatch and "Item description" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_1",
                 ItemDescription = description,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_ITEM_INFO1",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Item info 1",
+            Footer = shouldUseSwatch and "Item info 1" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_2",
                 ItemInfo1 = itemInfo1,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_ITEM_WEATHER",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Item weather",
+            Footer = shouldUseSwatch and "Item weather" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_3",
                 Weather = weather,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_OUTFIT_WEATHER",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Outfit weather",
+            Footer = shouldUseSwatch and "Outfit weather" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_4",
                 OutfitWeather = outfitWeather,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_ITEM_INFO2",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Item info 2",
+            Footer = shouldUseSwatch and "Item info 2" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_5",
                 ItemInfo2 = itemInfo2,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_HORSE_STATS",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Horse stats",
+            Footer = shouldUseSwatch and "Horse stats" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_6",
                 HorseStats = horseStats,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_VEHICLE_STATS",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Vehicle stats",
+            Footer = shouldUseSwatch and "Vehicle stats" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_7",
                 VehicleStats = vehicleStats,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_WEAPON_STATS",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Weapon stats",
+            Footer = shouldUseSwatch and "Weapon stats" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_8",
                 WeaponStats = weaponStats,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_RPG_EFFECTS",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "RPG effects",
+            Footer = shouldUseSwatch and "RPG effects" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_9",
                 RpgEffects = rpgEffects,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_SLIDER_INFO",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Slider info",
+            Footer = shouldUseSwatch and "Slider info" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_10",
                 SliderInfo = sliderInfo,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_BUSINESS_INFO",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Business info",
+            Footer = shouldUseSwatch and "Business info" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_11",
                 BusinessInfo = businessInfo,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_RECIPE_FOOTER",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Recipe footer",
+            Footer = shouldUseSwatch and "Recipe footer" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_12",
                 RecipeFooter = recipeFooter,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_SADDLE_STATS",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Saddle stats",
+            Footer = shouldUseSwatch and "Saddle stats" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_13",
                 SaddleStats = saddleStats,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_SET_STIRRUP_STATS",
+            Type = shouldUseSwatch and "SWATCH" or "TEXT",
             Label = "Stirrup stats",
+            Footer = shouldUseSwatch and "Stirrup stats" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_14",
                 StirrupStats = stirrupStats,
                 Pricing = pricing
             }
         },
         {
             Id = id .. "_PALETTE",
+            Type = shouldUseSwatch and "SWATCH" or "PALETTE",
             Label = "Palette",
-            Type = "PALETTE",
+            Footer = shouldUseSwatch and "Palette" or "",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_15",
                 IconVisible = true,
                 Palette = palette,
                 Pricing = pricing
@@ -391,10 +454,12 @@ local function getItems(id)
         },
         {
             Id = id .. "_EVERYTHING",
+            Type = shouldUseSwatch and "SWATCH" or "PALETTE",
             Label = "Everything",
             Footer = "For illustration purposes, causes issues",
-            Type = "PALETTE",
             Data = {
+                TextureDictionary = "overhead",
+                Texture = "overhead_kill_16",
                 BusinessInfo = businessInfo,
                 HorseStats = horseStats,
                 IconVisible = true,
@@ -441,7 +506,7 @@ local function getMenu()
             Id = "ITEM_GRID_MENU",
             Scene = "ITEM_GRID",
             Label = "Item grid",
-            Items = getItems("ITEM_GRID"),
+            Items = getItems("ITEM_GRID", true),
         },
         {
             Id = "ITEM_LIST_MENU",
