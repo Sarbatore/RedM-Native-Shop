@@ -1,4 +1,4 @@
-local function getTestMenuItems(id, shouldUseSwatch)
+local function getTestMenusItems(id, shouldUseSwatch)
     if not shouldUseSwatch then
         shouldUseSwatch = false
     end
@@ -482,14 +482,14 @@ local function getTestMenuItems(id, shouldUseSwatch)
     }
 end
 
-local function getTestMenus()
+local function getTestMenusMenus()
     return {
         {
             Id = "BOUNTY_MANAGEMENT_MENU",
             Scene = "BOUNTY_MANAGEMENT",
             Title = "TEST MENUS",
             Label = "Bounty management",
-            Items = getTestMenuItems("BOUNTY_MANAGEMENT"),
+            Items = getTestMenusItems("BOUNTY_MANAGEMENT"),
             Data = {
                 ItemDescription = "Used in postal offices to let you pay off bounties.",
             }
@@ -499,7 +499,7 @@ local function getTestMenus()
             Scene = "CLOTHING_MODIFY",
             Title = "TEST MENUS",
             Label = "Clothing modify",
-            Items = getTestMenuItems("CLOTHING_MODIFY"),
+            Items = getTestMenusItems("CLOTHING_MODIFY"),
             Data = {
                 ItemDescription = "Used in tailors to let you modify outfits.",
             }
@@ -509,7 +509,7 @@ local function getTestMenus()
             Scene = "HORSE_MANAGEMENT",
             Title = "TEST MENUS",
             Label = "Horse management",
-            Items = getTestMenuItems("HORSE_MANAGEMENT"),
+            Items = getTestMenusItems("HORSE_MANAGEMENT"),
             Data = {
                 ItemDescription = "Used in stables to let you manage your stabled horses.",
             }
@@ -519,7 +519,7 @@ local function getTestMenus()
             Scene = "ITEM_GRID",
             Title = "TEST MENUS",
             Label = "Item grid",
-            Items = getTestMenuItems("ITEM_GRID", true),
+            Items = getTestMenusItems("ITEM_GRID", true),
             Data = {
                 ItemDescription = "Used in tailors to let you select colors for clothing items.",
             }
@@ -529,7 +529,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST",
             Title = "TEST MENUS",
             Label = "Item list",
-            Items = getTestMenuItems("ITEM_LIST"),
+            Items = getTestMenusItems("ITEM_LIST"),
             Data = {
                 ItemDescription = "Used in the game to display a list of items with support for buy, saddle stats, and more.",
             }
@@ -539,7 +539,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_COLOUR_PALETTE",
             Title = "TEST MENUS",
             Label = "Item list color palette",
-            Items = getTestMenuItems("ITEM_LIST_COLOUR_PALETTE"),
+            Items = getTestMenusItems("ITEM_LIST_COLOUR_PALETTE"),
             Data = {
                 ItemDescription = "Used in the game to display a list of items with optional color palettes.",
             }
@@ -549,7 +549,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_DESCRIPTION",
             Title = "TEST MENUS",
             Label = "Item list description",
-            Items = getTestMenuItems("ITEM_LIST_DESCRIPTION"),
+            Items = getTestMenusItems("ITEM_LIST_DESCRIPTION"),
             Data = {
                 ItemDescription = "Similar to item list but with support for different descriptions.",
             }
@@ -559,7 +559,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_HORSE_STATS",
             Title = "TEST MENUS",
             Label = "Item list horse stats",
-            Items = getTestMenuItems("ITEM_LIST_HORSE_STATS"),
+            Items = getTestMenusItems("ITEM_LIST_HORSE_STATS"),
             Data = {
                 ItemDescription = "Used in stables to display a list of horses with their stats.",
             }
@@ -569,7 +569,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_RECIPES",
             Title = "TEST MENUS",
             Label = "Item list recipes",
-            Items = getTestMenuItems("ITEM_LIST_RECIPES"),
+            Items = getTestMenusItems("ITEM_LIST_RECIPES"),
             Data = {
                 ItemDescription = "Used at trappers and moonshine businesses to display craftable items with their recipes.",
             }
@@ -579,7 +579,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_RPG_STATS",
             Title = "TEST MENUS",
             Label = "Item list rpg stats",
-            Items = getTestMenuItems("ITEM_LIST_RPG_STATS"),
+            Items = getTestMenusItems("ITEM_LIST_RPG_STATS"),
             Data = {
                 ItemDescription = "Used in the game to display a list of items with RPG effects.",
             }
@@ -589,7 +589,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_SLIDER",
             Title = "TEST MENUS",
             Label = "Item list slider",
-            Items = getTestMenuItems("ITEM_LIST_SLIDER"),
+            Items = getTestMenusItems("ITEM_LIST_SLIDER"),
             Data = {
                 ItemDescription = "Used at barbers to display a list of hairstyles with a hair length slider.",
             }
@@ -599,7 +599,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_TEXTURE_DESCRIPTION",
             Title = "TEST MENUS",
             Label = "Item list texture description",
-            Items = getTestMenuItems("ITEM_LIST_TEXTURE_DESCRIPTION"),
+            Items = getTestMenusItems("ITEM_LIST_TEXTURE_DESCRIPTION"),
             Data = {
                 ItemDescription = "Used in the game to display a list of items with a texture as well as a description.",
             }
@@ -609,7 +609,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_VEHICLE_STATS",
             Title = "TEST MENUS",
             Label = "Item list vehicle stats",
-            Items = getTestMenuItems("ITEM_LIST_VEHICLE_STATS"),
+            Items = getTestMenusItems("ITEM_LIST_VEHICLE_STATS"),
             Data = {
                 ItemDescription = "Used in stables to display a list of vehicles with their stats.",
             }
@@ -619,7 +619,7 @@ local function getTestMenus()
             Scene = "ITEM_LIST_WEAPON_STATS",
             Title = "TEST MENUS",
             Label = "Item list weapon stats",
-            Items = getTestMenuItems("ITEM_LIST_WEAPON_STATS"),
+            Items = getTestMenusItems("ITEM_LIST_WEAPON_STATS"),
             Data = {
                 ItemDescription = "Used in gunsmiths to display a list of weapons with their stats.",
             }
@@ -629,7 +629,7 @@ local function getTestMenus()
             Scene = "ITEM_SELL_LIST_HORSE_STATS",
             Title = "TEST MENUS",
             Label = "Item sell list horse stats",
-            Items = getTestMenuItems("ITEM_SELL_LIST_HORSE_STATS"),
+            Items = getTestMenusItems("ITEM_SELL_LIST_HORSE_STATS"),
             Data = {
                 ItemDescription = "Used in stables to display a list of horses to sell with their stats.",
             }
@@ -639,7 +639,7 @@ local function getTestMenus()
             Scene = "MENU_LIST",
             Title = "TEST MENUS",
             Label = "Menu list",
-            Items = getTestMenuItems("MENU_LIST"),
+            Items = getTestMenusItems("MENU_LIST"),
             Data = {
                 ItemDescription = "A generic menu list with business support used in various shops throughout the game.",
             }
@@ -649,7 +649,7 @@ local function getTestMenus()
             Scene = "MENU_LIST_HORSE_STATS",
             Title = "TEST MENUS",
             Label = "Menu list horse stats",
-            Items = getTestMenuItems("MENU_LIST_HORSE_STATS"),
+            Items = getTestMenusItems("MENU_LIST_HORSE_STATS"),
             Data = {
                 ItemDescription = "Menu list specialized for displaying horse stats.",
             }
@@ -659,7 +659,7 @@ local function getTestMenus()
             Scene = "MENU_LIST_WEAPON_STATS",
             Title = "TEST MENUS",
             Label = "Menu list weapon stats",
-            Items = getTestMenuItems("MENU_LIST_WEAPON_STATS"),
+            Items = getTestMenusItems("MENU_LIST_WEAPON_STATS"),
             Data = {
                 ItemDescription = "Menu list specialized for displaying weapon stats.",
             }
@@ -669,7 +669,7 @@ local function getTestMenus()
             Scene = "MENU_STYLE_SELECTOR",
             Title = "TEST MENUS",
             Label = "Menu style selector",
-            Items = getTestMenuItems("MENU_STYLE_SELECTOR"),
+            Items = getTestMenusItems("MENU_STYLE_SELECTOR"),
             Data = {
                 ItemDescription = "Used in tailors to let you select styles for clothing items.",
             }
@@ -679,7 +679,7 @@ local function getTestMenus()
             Scene = "SADDLE_MANAGEMENT",
             Title = "TEST MENUS",
             Label = "Saddle management",
-            Items = getTestMenuItems("SADDLE_MANAGEMENT"),
+            Items = getTestMenusItems("SADDLE_MANAGEMENT"),
             Data = {
                 ItemDescription = "Used in stables to let you manage your saddles and horse equipment.",
             }
@@ -689,7 +689,7 @@ local function getTestMenus()
             Scene = "VEHICLE_MANAGEMENT",
             Title = "TEST MENUS",
             Label = "Vehicle management",
-            Items = getTestMenuItems("VEHICLE_MANAGEMENT"),
+            Items = getTestMenusItems("VEHICLE_MANAGEMENT"),
             Data = {
                 ItemDescription = "Used in stables to let you manage your stabled vehicles.",
             }
@@ -699,7 +699,7 @@ local function getTestMenus()
             Scene = "WEAPON_MANAGEMENT",
             Title = "TEST MENUS",
             Label = "Weapon management",
-            Items = getTestMenuItems("WEAPON_MANAGEMENT"),
+            Items = getTestMenusItems("WEAPON_MANAGEMENT"),
             Data = {
                 ItemDescription = "Used in gunsmiths to let you manage your stored weapons.",
             }
@@ -787,6 +787,159 @@ local function getTestMenus()
     }
 end
 
+local function getTestItemsItems(type)
+    local types = {
+        BUSINESS = {
+            Description = "Business item description",
+            Progress = 0.33,
+            TextColor = "COLOR_GOLD",
+            Texture = "MENU_ICON_TICK",
+            TextureDictionary = "MENU_TEXTURES",
+            TimeIconVisible = true,
+            IsNew = true,
+        },
+        COUPON = {
+            Description = "Coupon item description",
+            IsMaxCount = true,
+            Quantity = 3,
+            TextColor = "COLOR_GOLD",
+            Texture = "MENU_ICON_TICK",
+            TextureDictionary = "MENU_TEXTURES",
+            TimeIconVisible = true,
+            IsNew = true,
+        },
+        HAIR = {
+            Description = "Hair item description",
+            IsMaxCount = true,
+            Quantity = 3,
+            Texture = "MENU_ICON_TICK",
+            TextureDictionary = "MENU_TEXTURES",
+            TickVisible = true,
+            IsNew = true,
+        },
+        INVENTORY = {
+            Equipped = true,
+            EquippedTexture = "MENU_ICON_TICK",
+            EquippedTextureDictionary = "MENU_TEXTURES",
+            ForSale = true,
+            FrontSlotTexture = "MENU_ICON_TICK",
+            FrontSlotTextureColour = "COLOR_GOLD",
+            FrontSlotTextureDictionary = "MENU_TEXTURES",
+            FrontSlotTextureVisible = true,
+            Locked = false,
+            Owned = true,
+            Price = 500,
+            Rank = 25,
+            RankTexture = "MENU_ICON_TICK",
+            RankLocked = false,
+            IsNew = true,
+            IsOnSale = true,
+            UseGoldPrice = false,
+        },
+        PALETTE = {
+            Equipped = true,
+            IconVisible = true,
+            IsNew = true,
+            IsOnSale = true,
+            IconTexture = "MENU_ICON_TICK",
+            IconTextureDictionary = "MENU_TEXTURES",
+        },
+        SADDLE = {
+            BackTexture = "MENU_ICON_TICK",
+            BackTextureColour = "COLOR_GOLD",
+            BackTextureDictionary = "MENU_TEXTURES",
+            BackTextureVisible = true,
+            FrontSlotTextureColour = "COLOR_GOLD",
+            FrontSlotTextureVisible = true,
+            FrontSlotTexture = "MENU_ICON_TICK",
+        },
+        STABLE = {
+            BackTexture = "MENU_ICON_TICK",
+            BackTextureColour = "COLOR_GOLD",
+            BackTextureDictionary = "MENU_TEXTURES",
+            BackTextureVisible = true,
+            FrontAddSlotTexture = "MENU_ICON_TICK",
+            FrontAddSlotTextureColour = "COLOR_GOLD",
+            FrontAddSlotTextureDictionary = "MENU_TEXTURES",
+            FrontAddSlotTextureVisible = true,
+            FrontSlotTexture = "MENU_ICON_TICK",
+            FrontSlotTextureColour = "COLOR_GOLD",
+            FrontSlotTextureDictionary = "MENU_TEXTURES",
+            FrontSlotTextureVisible = true,
+            IsNew = true,
+            IsOnSale = true,
+        },
+        STEPPER = {
+            IconTexture = "MENU_ICON_TICK",
+            IconTextureDict = "MENU_TEXTURES",
+            IconVisible = true,
+            IsNew = true,
+            IsOnSale = true,
+            StepperOptions = { "Visible", "Hidden" },
+            StepperValue = 0,
+            StepperVisible = true,
+            StepperTextureVisible = false,
+            StepperTexture = 0,
+            StepperTextureDict = 0,
+        },
+        TEXT = {
+            AddIconTexture = "MENU_ICON_TICK",
+            AddIconTextureDict = "MENU_TEXTURES",
+            AddIconVisible = true,
+            Equipped = true,
+            OnHorse = true,
+            RightLabelVisible = true,
+            RightText = "Right text",
+            IsNew = true,
+            IsOnSale = true,
+        },
+    }
+
+    return types[type]
+end
+
+local function getTestItemsMenus()
+    local menuTypes = {
+        BUSINESS = { Label = "Business Item", Description = "Business items are primarily used in the moonshine shack." },
+        COUPON = { Label = "Coupon Item", Description = "Coupon items are used to display coupons providing discounts on purchases." },
+        HAIR = { Label = "Hair Item", Description = "Hair items are used at barbers to display hairstyles and facial hair." },
+        INVENTORY = { Label = "Inventory Item", Description = "Inventory items are used throughout the game for various purposes." },
+        PALETTE = { Label = "Palette Item", Description = "Palette items are used to display chosen colors for clothing and other items." },
+        SADDLE = { Label = "Saddle Item", Description = "Saddle items are used in stables to display saddles." },
+        STABLE = { Label = "Stable Item", Description = "Stable items are used to display horse-related items." },
+        STEPPER = { Label = "Stepper Item", Description = "Stepper items are used to select options from a list." },
+        TEXT = { Label = "Text Item", Description = "Text items are used throughout the game to display various text elements." },
+    }
+
+    local menus = {}
+
+    for type, item in pairs(menuTypes) do
+        local items = {}
+
+        for i = 1, 10 do
+            table.insert(items, {
+                Id = "TEST_ITEMS_" .. type .. "_ITEM_" .. i,
+                Type = type,
+                Label = item.Label .. " " .. i,
+                Data = getTestItemsItems(type)
+            })
+        end
+
+        table.insert(menus, {
+            Id = "TEST_ITEMS_" .. type .. "_MENU",
+            Scene = "MENU_LIST",
+            Title = "TEST ITEMS",
+            Label = item.Label .. "s",
+            Items = items,
+            Data = {
+                ItemDescription = item.Description,
+            }
+        })
+    end
+
+    return menus
+end
+
 local function getLongMenu()
     local items = {}
     for i = 1, 10000 do
@@ -815,102 +968,454 @@ local data = {
             Title = "TEST MENUS",
             Subtitle = "Select a test menu",
             Label = "Test Menus",
-            Items = getTestMenus(),
+            Items = getTestMenusMenus(),
             Data = {
                 ItemDescription = "A preview of the different menus. Not all options are supported in every menu. Pricing is included in all items, but can be omitted if desired.",
             }
         },
         {
+            Id = "TEST_ITEMS",
+            Scene = "MENU_LIST",
+            Title = "TEST ITEMS",
+            Subtitle = "Select a test item",
+            Label = "Test Items",
+            Items = getTestItemsMenus(),
+            Data = {
+                ItemDescription = "A preview of the different menu items. Used within various menus to showcase different item data options.",
+            }
+        },
+        {
+            Id = "DEMO_MENU",
+            Scene = "MENU_LIST",
+            Label = "Demos",
+            Footer = "senexis.dev/r/RedM-Native-Shop",
+            Items = {
+                {
+                    Id = "DEMO_FAST_TRAVEL",
+                    Scene = "ITEM_LIST_DESCRIPTION",
+                    Title = "FAST TRAVEL",
+                    Subtitle = "Overriden by tab",
+                    Label = "Fast Travel",
+                    Tabs = {
+                        { Id = "TAB_ALL",        Label = "All",            Source = { Name = "DynamicFilterMenu", Filter = nil } },
+                        { Id = "AMBARINO",       Label = "Ambarino",       Source = { Name = "DynamicFilterMenu", Filter = "REG_AMBARINO" } },
+                        { Id = "NEW_HANOVER",    Label = "New Hanover",    Source = { Name = "DynamicFilterMenu", Filter = "REG_NEW_HANOVER" } },
+                        { Id = "LEMOYNE",        Label = "Lemoyne",        Source = { Name = "DynamicFilterMenu", Filter = "REG_LEMOYNE" } },
+                        { Id = "WEST_ELIZABETH", Label = "West Elizabeth", Source = { Name = "DynamicFilterMenu", Filter = "REG_WEST_ELIZABETH" } },
+                        { Id = "NEW_AUSTIN",     Label = "New Austin",     Source = { Name = "DynamicFilterMenu", Filter = "REG_NEW_AUSTIN" } },
+                    },
+                    Data = {
+                        ItemDescription = "A demo fast travel menu showcasing dynamic items and filtering. Move to see the distances update in real time.",
+                    }
+                },
+                {
+                    Id = "DEMO_MOONSHINE",
+                    Scene = "MENU_LIST",
+                    Title = "Moonshiner Business",
+                    Subtitle = "Moonshine Production",
+                    Label = "Moonshine",
+                    Items = {
+                        {
+                            Id = "MOONSHINE_STILL",
+                            Scene = "ITEM_LIST_DESCRIPTION",
+                            Title = "Moonshiner Business",
+                            Type = "BUSINESS",
+                            Label = "Moonshine Still",
+                            Footer = "Mash required to start production",
+                            Data = {
+                                Description = "Mash Required",
+                                Progress = 0,
+                                TextColor = "COLOR_WHITE",
+                                Texture = "moonshiner_workbench_still_empty",
+                                TextureDictionary = "toast_mp_roles",
+                                TimeIconVisible = false,
+                                IsNew = false,
+                                BusinessInfo = {
+                                    Visible = true,
+                                    Description = "Mash is required to start the production process. The Moonshine strength selected will determine completion time.",
+                                    MaterialsIconDictionary = "toast_mp_roles",
+                                    MaterialsIcon = "moonshiner_workbench_still_empty",
+                                    ProductionIconDictionary = "toast_mp_roles",
+                                    ProductionIcon = "moonshiner_workbench_flavoring",
+                                    GoodsIconDictionary = "toast_mp_roles",
+                                    GoodsIcon = "moonshiner_workbench_moonshine",
+                                }
+                            },
+                            Items = {
+                                {
+                                    Id = "MOONSHINE_STRENGTH_WEAK",
+                                    Type = "COUPON",
+                                    Label = "Weak Moonshine",
+                                    Footer = "Mash required to start production",
+                                    Data = {
+                                        Description = "24 mins to produce",
+                                        Progress = 100,
+                                        TextColor = "COLOR_WHITE",
+                                        Texture = "moonshiner_workbench_still_weak",
+                                        TextureDictionary = "toast_mp_roles",
+                                        TimeIconVisible = false,
+                                        IsNew = false,
+                                        Pricing = {
+                                            Price = 5000,
+                                            Tokens = 0,
+                                            SalePrice = nil,
+                                            UseGoldPrice = false,
+                                            Affordable = true,
+                                            LeftText = "Mash Price",
+                                            RightText = nil,
+                                            Locked = false,
+                                            Rank = nil
+                                        }
+                                    }
+                                },
+                                {
+                                    Id = "MOONSHINE_STRENGTH_AVERAGE",
+                                    Type = "COUPON",
+                                    Label = "Average Moonshine",
+                                    Footer = "Mash required to start production",
+                                    Data = {
+                                        Description = "36 mins to produce",
+                                        Progress = 0,
+                                        TextColor = "COLOR_WHITE",
+                                        Texture = "moonshiner_workbench_still_average",
+                                        TextureDictionary = "toast_mp_roles",
+                                        TimeIconVisible = false,
+                                        IsNew = false,
+                                        Pricing = {
+                                            Price = 5000,
+                                            Tokens = 0,
+                                            SalePrice = nil,
+                                            UseGoldPrice = false,
+                                            Affordable = true,
+                                            LeftText = "Mash Price",
+                                            RightText = nil,
+                                            Locked = false,
+                                            Rank = nil
+                                        }
+                                    }
+                                },
+                                {
+                                    Id = "MOONSHINE_STRENGTH_STRONG",
+                                    Type = "COUPON",
+                                    Label = "Strong Moonshine",
+                                    Footer = "Mash required to start production",
+                                    Data = {
+                                        Description = "48 mins to produce",
+                                        Progress = 0,
+                                        TextColor = "COLOR_WHITE",
+                                        Texture = "moonshiner_workbench_still_strong",
+                                        TextureDictionary = "toast_mp_roles",
+                                        TimeIconVisible = false,
+                                        IsNew = false,
+                                        Pricing = {
+                                            Price = 5000,
+                                            Tokens = 0,
+                                            SalePrice = nil,
+                                            UseGoldPrice = false,
+                                            Affordable = true,
+                                            LeftText = "Mash Price",
+                                            RightText = nil,
+                                            Locked = false,
+                                            Rank = nil
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            Id = "MOONSHINE_FLAVOR",
+                            Scene = "ITEM_LIST_RECIPES",
+                            Title = "Moonshiner Business",
+                            Type = "BUSINESS",
+                            Label = "Flavoring",
+                            Footer = "Mash required to start production",
+                            Data = {
+                                Description = "Unflavored",
+                                Progress = 0,
+                                TextColor = "COLOR_WHITE",
+                                Texture = "moonshiner_workbench_flavoring",
+                                TextureDictionary = "toast_mp_roles",
+                                TimeIconVisible = false,
+                                IsNew = true,
+                                BusinessInfo = {
+                                    Visible = true,
+                                    Description = "View a selection of recipes to add flavor to your moonshine. Flavors are requested from certain buyers.",
+                                    MaterialsIconDictionary = "toast_mp_roles",
+                                    MaterialsIcon = "moonshiner_workbench_still_empty",
+                                    ProductionIconDictionary = "toast_mp_roles",
+                                    ProductionIcon = "moonshiner_workbench_flavoring",
+                                    GoodsIconDictionary = "toast_mp_roles",
+                                    GoodsIcon = "moonshiner_workbench_moonshine",
+                                }
+                            },
+                            Items = {
+                                {
+                                    Id = "RECIPE_COBBLER_MOONSHINE",
+                                    Type = "COUPON",
+                                    Label = "Wild Creek Moonshine",
+                                    Footer = "Buyers reset: 24hrs 0mins 0sec",
+                                    Data = {
+                                        Description = "$247.50 Value",
+                                        TextColor = "COLOR_WHITE",
+                                        Texture = "moonshiner_workbench_flavoring_quality_02",
+                                        TextureDictionary = "toast_mp_roles",
+                                        TimeIconVisible = false,
+                                        IsNew = false,
+                                        RecipeFooter = {
+                                            Visible = true,
+                                            TitleType = 0,
+                                            Items = {
+                                                { Enabled = true, Name = "1 x Wild Mint",      Count = 13, TextureDictionary = "inventory_items",    Texture = "consumable_herb_wild_mint" },
+                                                { Enabled = true, Name = "1 x Vanilla Flower", Count = 3,  TextureDictionary = "inventory_items",    Texture = "consumable_herb_vanilla_flower" },
+                                                { Enabled = true, Name = "1 x Creek Plum",     Count = 6,  TextureDictionary = "inventory_items_mp", Texture = "provision_wldflwr_creek_plum" },
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    Id = "RECIPE_TROPICAL_MOONSHINE",
+                                    Type = "COUPON",
+                                    Label = "Tropical Punch Moonshine",
+                                    Footer = "Buyers reset: 24hrs 0mins 0sec",
+                                    Disabled = true,
+                                    Data = {
+                                        Description = "$206.25 Value",
+                                        TextColor = "COLOR_WHITE",
+                                        Texture = "moonshiner_workbench_flavoring_quality_01",
+                                        TextureDictionary = "toast_mp_roles",
+                                        TimeIconVisible = false,
+                                        IsNew = true,
+                                        RecipeFooter = {
+                                            Visible = true,
+                                            TitleType = 0,
+                                            Items = {
+                                                { Enabled = false, Name = "1 x Canned Pineapples", Count = 0, TextureDictionary = "inventory_items", Texture = "consumable_pineapples_can" },
+                                                { Enabled = true,  Name = "1 x Pear",              Count = 6, TextureDictionary = "inventory_items", Texture = "consumable_pear" },
+                                                { Enabled = true,  Name = "1 x Vanilla Flower",    Count = 9, TextureDictionary = "inventory_items", Texture = "consumable_herb_vanilla_flower" },
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            Id = "MOONSHINE_BOTTLES",
+                            Scene = "ITEM_LIST_DESCRIPTION",
+                            Type = "BUSINESS",
+                            Title = "Moonshiner Business",
+                            Subtitle = "Moonshine Production",
+                            Label = "Moonshine",
+                            Footer = "Mash required to start production",
+                            Data = {
+                                Description = "18/20 Bottles",
+                                Progress = 18 / 20,
+                                TextColor = "COLOR_WHITE",
+                                Texture = "moonshiner_workbench_moonshine",
+                                TextureDictionary = "toast_mp_roles",
+                                TimeIconVisible = false,
+                                IsNew = false,
+                                BusinessInfo = {
+                                    Visible = true,
+                                    Description = "Select from a list of potential buyers who requested your moonshine flavor. Buyers will refresh every 2 days.",
+                                    MaterialsIconDictionary = "toast_mp_roles",
+                                    MaterialsIcon = "moonshiner_workbench_still_empty",
+                                    ProductionIconDictionary = "toast_mp_roles",
+                                    ProductionIcon = "moonshiner_workbench_flavoring",
+                                    GoodsIconDictionary = "toast_mp_roles",
+                                    GoodsIcon = "moonshiner_workbench_moonshine",
+                                }
+                            },
+                            Items = {
+                                {
+                                    Id = "BUYER_BERT",
+                                    Type = "COUPON",
+                                    Label = "Bert Higgins",
+                                    Footer = "Buyers reset: 24hrs 0mins 0sec",
+                                    Data = {
+                                        ItemDescription = "This buyer pays lower prices, but will accept all flavored or unflavored moonshine.",
+                                        Description = "All Flavors",
+                                        TextColor = "COLOR_WHITE",
+                                        Texture = "mp_u_m_m_buyer_default_01",
+                                        TextureDictionary = "moonshiner_requests",
+                                        TimeIconVisible = false,
+                                        IsNew = false,
+                                        Pricing = {
+                                            Price = 28875,
+                                            Tokens = 0,
+                                            SalePrice = nil,
+                                            UseGoldPrice = false,
+                                            Affordable = true,
+                                            LeftText = "Buyer Offer",
+                                            RightText = nil,
+                                            Locked = false,
+                                            Rank = nil
+                                        }
+                                    }
+                                },
+                                {
+                                    Id = "BUYER_NATE",
+                                    Type = "COUPON",
+                                    Label = "Nate Abney",
+                                    Footer = "Buyers reset: 24hrs 0mins 0sec",
+                                    Disabled = true,
+                                    Data = {
+                                        ItemDescription = "This buyer pays higher prices, but will only accept a certain flavor or unflavored moonshine.",
+                                        Description = "Berry Mint Moonshine",
+                                        TextColor = "COLOR_WHITE",
+                                        Texture = "mp_u_m_m_buyer_regular_01",
+                                        TextureDictionary = "moonshiner_requests",
+                                        TimeIconVisible = false,
+                                        IsNew = false,
+                                        Pricing = {
+                                            Price = 49500,
+                                            Tokens = 0,
+                                            SalePrice = nil,
+                                            UseGoldPrice = false,
+                                            Affordable = true,
+                                            LeftText = "Buyer Offer",
+                                            RightText = nil,
+                                            Locked = false,
+                                            Rank = nil
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    Data = {
+                        ItemDescription = "A demo moonshine business menu aiming to recreate the moonshine production menus.",
+                    }
+                },
+                {
+                    Id = "DEMO_COOLDOWN",
+                    Type = "TEXT",
+                    Label = "Cooldown",
+                    Prompts = {
+                        Select = { Visible = true, Label = "Select" }
+                    },
+                    Data = {
+                        ItemDescription = "Showcases an example of disabling an item with a cooldown timer displayed in the footer.",
+                        DisabledFooter = "~e~This is the default disabled fallback text"
+                    }
+                },
+            },
+            Data = {
+                ItemDescription = "A demo menu showcasing various menu features. Have a cool idea for a demo? Report it on the GitHub page!",
+            }
+        },
+        {
+            Id = "PROMPTS_MENU",
+            Scene = "MENU_LIST",
+            Label = "Prompts",
+            Items = {
+                {
+                    Id = "PROMPTS_ACTION",
+                    Type = "TEXT",
+                    Label = "Prompts",
+                    Footer = "This is the default footer",
+                    Prompts = {
+                        Select = { Visible = true, Label = "Custom Select" },
+                        Option = { Visible = true, Label = "Custom Option" },
+                        Toggle = { Visible = true, Label = "Custom Toggle" },
+                        Info = { Visible = true, Label = "Custom Info" },
+                        Adjust = { Visible = true, Label = "Custom Adjust" },
+                        Modify = { Visible = true, Label = "Custom Modify" },
+                    },
+                    Data = {
+                        ItemDescription = "Showcases an example of custom prompt labels for all available prompts.",
+                        DisabledFooter = "~e~Disabled footer overrides default footer",
+                    }
+                },
+                {
+                    Id = "HELD_PROMPTS_ACTION",
+                    Type = "TEXT",
+                    Label = "Held Prompts",
+                    Footer = "This is the default footer",
+                    Prompts = {
+                        Select = { Visible = true, Label = "Held Select", Held = true },
+                        Option = { Visible = true, Label = "Held Option", Held = true },
+                        Toggle = { Visible = true, Label = "Held Toggle", Held = true },
+                        Info = { Visible = true, Label = "Info (not supported)", Held = false },
+                        Adjust = { Visible = true, Label = "Adjust (not supported)", Held = false },
+                        Modify = { Visible = true, Label = "Modify (not supported)", Held = false },
+                    },
+                    Data = {
+                        ItemDescription = "Showcases an example of held prompts for all available prompts.",
+                        DisabledFooter = "~e~Disabled footer overrides default footer",
+                    }
+                },
+                {
+                    Id = "DISABLED_PROMPTS_ACTION",
+                    Type = "TEXT",
+                    Label = "Disabled Prompts",
+                    Disabled = true,
+                    Footer = "This is the default footer",
+                    Prompts = {
+                        Select = { Visible = true, Label = "Disabled Select" },
+                        Option = { Visible = true, Label = "Disabled Option" },
+                        Toggle = { Visible = true, Label = "Disabled Toggle" },
+                        Info = { Visible = true, Label = "Disabled Info" },
+                        Adjust = { Visible = true, Label = "Disabled Adjust" },
+                        Modify = { Visible = true, Label = "Disabled Modify" },
+                    },
+                    Data = {
+                        ItemDescription = "Showcases what happens when an item is disabled with custom prompts and a footer. Also has effects on scene UI.",
+                        DisabledFooter = "~e~Disabled footer overrides default footer",
+                    }
+                },
+            },
+            Data = {
+                ItemDescription = "A demo menu showcasing all available prompt types with custom labels, held prompts, and disabled prompts.",
+            }
+        },
+        {
             Id = "LONG_MENU",
+            Scene = "MENU_LIST",
             Label = "Long Menu",
             Items = getLongMenu(),
+            Footer = "~e~Caution: This may cause a slight stutter to occur",
             Data = {
                 ItemDescription = "A menu with a large number of items to test scrolling behavior.",
             }
         },
         {
-            Id = "DYNAMIC_FILTER_MENU",
-            Scene = "ITEM_LIST_DESCRIPTION",
-            Title = "FAST TRAVEL",
-            Subtitle = "Overriden by tab",
-            Label = "Fast Travel Demo",
-            Tabs = {
-                { Id = "TAB_ALL",        Label = "All",            Source = { Name = "DynamicFilterMenu", Filter = nil } },
-                { Id = "AMBARINO",       Label = "Ambarino",       Source = { Name = "DynamicFilterMenu", Filter = "REG_AMBARINO" } },
-                { Id = "NEW_HANOVER",    Label = "New Hanover",    Source = { Name = "DynamicFilterMenu", Filter = "REG_NEW_HANOVER" } },
-                { Id = "LEMOYNE",        Label = "Lemoyne",        Source = { Name = "DynamicFilterMenu", Filter = "REG_LEMOYNE" } },
-                { Id = "WEST_ELIZABETH", Label = "West Elizabeth", Source = { Name = "DynamicFilterMenu", Filter = "REG_WEST_ELIZABETH" } },
-                { Id = "NEW_AUSTIN",     Label = "New Austin",     Source = { Name = "DynamicFilterMenu", Filter = "REG_NEW_AUSTIN" } },
+            Id = "SENEXIS_MENU",
+            Scene = "MENU_LIST",
+            Label = "Support me!",
+            Items = {
+                {
+                    Id = "ITEM_GITHUB",
+                    Label = "Github",
+                    Footer = "senexis.dev",
+                    Data = {
+                        ItemDescription = "Check out my projects on GitHub! If you choose to support me, much appreciated!"
+                    }
+                },
+                {
+                    Id = "ITEM_RDO_GG",
+                    Label = "RDO.GG",
+                    Footer = "rdo.gg",
+                    Data = {
+                        ItemDescription = "Check out my RDO Compendium project! If you need a Red Dead Discord bot, this is the one to get."
+                    }
+                },
+                {
+                    Id = "ITEM_PATREON",
+                    Label = "Patreon",
+                    Footer = "rdo.gg/patreon",
+                    Data = {
+                        ItemDescription = "Support my work on Patreon! These projects will always remain free of charge."
+                    }
+                }
             },
             Data = {
-                ItemDescription = "A demo fast travel menu showcasing dynamic items and filtering. Move to see the distances update in real time.",
-            }
-        },
-        {
-            Id = "COOLDOWN_ACTION",
-            Type = "TEXT",
-            Label = "Cooldown Demo",
-            Prompts = {
-                Select = { Visible = true, Label = "Select" }
-            },
-            Data = {
-                ItemDescription = "Showcases an example of disabling an item with a cooldown timer displayed in the footer.",
-                DisabledFooter = "~e~This is the default disabled fallback text"
-            }
-        },
-        {
-            Id = "PROMPTS_ACTION",
-            Type = "TEXT",
-            Label = "Prompts",
-            Prompts = {
-                Select = { Visible = true, Label = "Custom Select" },
-                Option = { Visible = true, Label = "Custom Option" },
-                Toggle = { Visible = true, Label = "Custom Toggle" },
-                Info = { Visible = true, Label = "Custom Info" },
-                Adjust = { Visible = true, Label = "Custom Adjust" },
-                Modify = { Visible = true, Label = "Custom Modify" },
-            },
-            Data = {
-                ItemDescription = "Showcases an example of custom prompt labels for all available prompts.",
-            }
-        },
-        {
-            Id = "HELD_PROMPTS_ACTION",
-            Type = "TEXT",
-            Label = "Held Prompts",
-            Prompts = {
-                Select = { Visible = true, Label = "Held Select", Held = true },
-                Option = { Visible = true, Label = "Held Option", Held = true },
-                Toggle = { Visible = true, Label = "Held Toggle", Held = true },
-                Info = { Visible = true, Label = "Info doesn't support hold", Held = false },
-                Adjust = { Visible = true, Label = "Adjust doesn't support hold", Held = false },
-                Modify = { Visible = true, Label = "Modify doesn't support hold", Held = false },
-            },
-            Data = {
-                ItemDescription = "Showcases an example of held prompts for all available prompts.",
-            }
-        },
-        {
-            Id = "DISABLED_PROMPTS_ACTION",
-            Type = "TEXT",
-            Label = "Disabled Prompts",
-            Disabled = true,
-            Footer = "This footer won't be shown",
-            Prompts = {
-                Select = { Visible = true, Label = "Disabled Select" },
-                Option = { Visible = true, Label = "Disabled Option" },
-                Toggle = { Visible = true, Label = "Disabled Toggle" },
-                Info = { Visible = true, Label = "Disabled Info" },
-                Adjust = { Visible = true, Label = "Disabled Adjust" },
-                Modify = { Visible = true, Label = "Disabled Modify" },
-            },
-            Data = {
-                ItemDescription = "Showcases what happens when an item is disabled with custom prompts and a footer.",
-                DisabledFooter = "~e~Disabled footer overrides default footer",
+                ItemDescription = "If you like my work and would like to support me, check out these links! Thank you for your support!"
             }
         }
     },
 }
+
+RequestStreamedTxd("moonshiner_requests", false)
 
 local function getDynamicFilterMenu(filter)
     local playerPed = PlayerPedId()
@@ -975,12 +1480,12 @@ local function getActionCooldownFooter(secondsLeft)
 end
 
 AddEventHandler("native_shop:item_selected", function(event)
-    if event.ID == "COOLDOWN_ACTION" then
+    if event.ID == "DEMO_COOLDOWN" then
         actionCooldownSeconds = 5
 
         local footer = getActionCooldownFooter(actionCooldownSeconds)
-        TriggerEvent("shop:disable_item", "COOLDOWN_ACTION")
-        TriggerEvent("shop:set_item_footer", "COOLDOWN_ACTION", footer)
+        TriggerEvent("shop:disable_item", "DEMO_COOLDOWN")
+        TriggerEvent("shop:set_item_footer", "DEMO_COOLDOWN", footer)
 
         PostFeedTicker(string.format("Cooling down action for %d seconds", actionCooldownSeconds))
     elseif tostring(event.ID):find("FAST_TRAVEL_") then
@@ -998,7 +1503,6 @@ AddEventHandler("native_shop:item_action", function(event)
     end
 end)
 
-
 ShopNavigator:register(
     data,
     { DynamicFilterMenu = getDynamicFilterMenu },
@@ -1010,21 +1514,21 @@ Citizen.CreateThread(function()
         -- For performance reasons, only trigger events when the roleplay text menu is open
         if ShopNavigator:getRootMenuId() == "TEST_MENU" then
             -- Update dynamic filter menu
-            TriggerEvent("shop:refresh_menu", "DYNAMIC_FILTER_MENU")
+            TriggerEvent("shop:refresh_menu", "DEMO_FAST_TRAVEL")
 
             -- Update cooldown action
             if actionCooldownSeconds == 0 then
                 actionCooldownSeconds = -1
 
-                TriggerEvent("shop:enable_item", "COOLDOWN_ACTION")
-                TriggerEvent("shop:clear_item_footer", "COOLDOWN_ACTION")
+                TriggerEvent("shop:enable_item", "DEMO_COOLDOWN")
+                TriggerEvent("shop:clear_item_footer", "DEMO_COOLDOWN")
             elseif actionCooldownSeconds > 0 then
                 actionCooldownSeconds = actionCooldownSeconds - 1
 
                 local footer = getActionCooldownFooter(actionCooldownSeconds)
 
-                TriggerEvent("shop:disable_item", "COOLDOWN_ACTION")
-                TriggerEvent("shop:set_item_footer", "COOLDOWN_ACTION", footer)
+                TriggerEvent("shop:disable_item", "DEMO_COOLDOWN")
+                TriggerEvent("shop:set_item_footer", "DEMO_COOLDOWN", footer)
             end
         end
 

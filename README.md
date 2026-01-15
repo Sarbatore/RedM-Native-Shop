@@ -11,6 +11,12 @@ Unlike traditional web-based or custom UI implementations, Native Shop leverages
 
 📖 **[Jump to Documentation](#types)**
 
+## Showcase
+
+You can click below to watch a short demonstration of Native Shop.
+
+[![A preview of the showcase video showing an open Shop menu](http://img.youtube.com/vi/qR8jLiBA4H8/0.jpg)](http://www.youtube.com/watch?v=qR8jLiBA4H8 "Showcase - RedM Native Shop")
+
 ## Feature Requests
 
 If you're missing functionality or have ideas for new features that would improve Native Shop, please don't hesitate to [open an issue](https://github.com/Senexis/RedM-Native-Shop/issues). Feature requests from the community are always welcome, and feedback about use cases and requirements helps shape the direction of this project!

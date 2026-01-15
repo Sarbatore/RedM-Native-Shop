@@ -1929,12 +1929,15 @@ function ShopUI.Prompts.UpdatePromptsFromItem(item)
     if infoData.Visible == true then
         local label = infoData.Label or "Missing Info Label"
         local disabled = infoData.Disabled == true
-        local held = infoData.Held == true
+
+        if infoData.Held == true then
+            print("[NativeShop] Warning: Info prompt cannot be held. Ignoring 'Held' property.")
+        end
 
         ShopUI.Prompts.SetPromptLabel(4, label)
         ShopUI.Prompts.SetPromptEnabled(4, not isItemDisabled and not disabled)
         ShopUI.Prompts.SetPromptVisible(4, true)
-        ShopUI.Prompts.SetPromptHeld(4, held)
+        ShopUI.Prompts.SetPromptHeld(4, false)
     else
         ShopUI.Prompts.ClearPrompt(4)
     end
@@ -1971,12 +1974,15 @@ function ShopUI.Prompts.UpdatePromptsFromItem(item)
     elseif adjustData.Visible == true then
         local label = adjustData.Label or "Missing Adjust Label"
         local disabled = adjustData.Disabled == true
-        local held = adjustData.Held == true
+
+        if adjustData.Held == true then
+            print("[NativeShop] Warning: Adjust prompt cannot be held. Ignoring 'Held' property.")
+        end
 
         ShopUI.Prompts.SetPromptLabel(5, label)
         ShopUI.Prompts.SetPromptEnabled(5, not isItemDisabled and not disabled)
         ShopUI.Prompts.SetPromptVisible(5, true)
-        ShopUI.Prompts.SetPromptHeld(5, held)
+        ShopUI.Prompts.SetPromptHeld(5, false)
     else
         ShopUI.Prompts.ClearPrompt(5)
     end
@@ -1985,12 +1991,15 @@ function ShopUI.Prompts.UpdatePromptsFromItem(item)
     if modifyData.Visible == true then
         local label = modifyData.Label or "Missing Modify Label"
         local disabled = modifyData.Disabled == true
-        local held = modifyData.Held == true
+
+        if modifyData.Held == true then
+            print("[NativeShop] Warning: Modify prompt cannot be held. Ignoring 'Held' property.")
+        end
 
         ShopUI.Prompts.SetPromptLabel(6, label)
         ShopUI.Prompts.SetPromptEnabled(6, not isItemDisabled and not disabled)
         ShopUI.Prompts.SetPromptVisible(6, true)
-        ShopUI.Prompts.SetPromptHeld(6, held)
+        ShopUI.Prompts.SetPromptHeld(6, false)
     else
         ShopUI.Prompts.ClearPrompt(6)
     end
