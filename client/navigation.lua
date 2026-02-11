@@ -6,7 +6,8 @@
 ---@field parentMap table A map of { [childId] = parentId } for back-navigation context.
 ---@field itemOverrides table A map of { [menuId] = itemArray } for runtime overrides.
 ---@field visibilityOverrides table A map of { [menuId] = boolean } for toggling visibility.
----@field history table A stack of state objects for robust back-navigation.
+---@field history table A stack of state objects for robust back-navigation within the current tree.
+---@field rootStack table A stack of state objects for cross-menu linking/back-navigation.
 ---@field focusMemory table A map of { [menuId] = focusIndex } to remember focus in static menus.
 ---@field onError function A callback for handling runtime errors gracefully.
 ---@field currentMenuId string|nil The ID of the currently active static menu.
@@ -26,6 +27,7 @@ ShopNavigator.contextProviders = {}
 ShopNavigator.menuMap, ShopNavigator.parentMap = {}, {}
 ShopNavigator.itemOverrides, ShopNavigator.visibilityOverrides = {}, {}
 ShopNavigator.history, ShopNavigator.focusMemory = {}, {}
+ShopNavigator.rootStack = {}
 ShopNavigator.currentMenuId, ShopNavigator.currentRootId = nil, nil
 ShopNavigator.currentPageIndex = 1
 ShopNavigator.dynamicMenuContext = nil
@@ -148,13 +150,34 @@ function ShopNavigator:_rebuildCurrentItems()
         if self:_isItemVisible(itemData) then
             local processedItem = shallowCopy(itemData)
             processedItem.MenuId = menu.Id
-            if itemData.Items or itemData.Tabs or itemData.Source then
+
+            -- Check for conflict: LinkMenuId AND Items/Tabs/Source
+            if processedItem.LinkMenuId and (processedItem.Items or processedItem.Tabs or processedItem.Source) then
+                print("[NativeShop] Warning: Item '" .. tostring(processedItem.Id) .. "' has both LinkMenuId and Items/Tabs/Source. Ignoring items and using Link.")
+                processedItem.Items = nil
+                processedItem.Tabs = nil
+                processedItem.Source = nil
+            end
+
+            -- Determine if it's a submenu or a link
+            if processedItem.Items or processedItem.Tabs or processedItem.Source then
                 processedItem.IsSubmenu = true
 
+                -- Disable if empty
                 if self:getItemCount(itemData.Id, self.currentRootId, { IncludeHidden = false }) == 0 then
                     processedItem.Disabled = true
                 end
+            elseif processedItem.LinkMenuId then
+                -- Link items are considered submenus for navigation purposes
+                processedItem.IsSubmenu = true
+
+                -- Do NOT disable links even if they have no "child" items in this context,
+                -- because the items exist in the target menu, not here.
+            elseif processedItem.Action then
+                -- Action items are also considered submenus since they trigger something beyond just being a leaf item.
+                processedItem.IsSubmenu = true
             end
+
             table.insert(combinedItems, processedItem)
         end
     end
@@ -209,6 +232,41 @@ function ShopNavigator:_saveStateToHistory(focusIndex)
         table.insert(self.history, { Type = "dynamic", Context = self.dynamicMenuContext, FocusIndex = focusIndex })
     else
         table.insert(self.history, { Type = "static", MenuId = self.currentMenuId, PageIndex = self.currentPageIndex, FocusIndex = focusIndex })
+    end
+end
+
+--- (Private) Builds a history stack from a target item back to its root.
+--- Used when deep-linking into a menu to simulate user navigation.
+---@param self ShopNavigator
+---@param targetMenuId string The ID we are jumping to.
+---@param rootId string The root of the tree.
+function ShopNavigator:_simulateHistoryPath(targetMenuId, rootId)
+    ---@type string|nil
+    local currentId = targetMenuId
+    local path = {}
+
+    -- 1. Trace parents upwards until we hit the root or nil
+    while currentId do
+        local parentId = self.parentMap[rootId][currentId]
+
+        if parentId then
+            table.insert(path, parentId)
+            currentId = parentId
+        else
+            currentId = nil -- We reached the root (or orphan)
+        end
+    end
+
+    -- 2. Reverse the path to push into history in correct order (Root -> Child -> TargetParent)
+    -- We assume default page index 1 and default focus index 1 for these simulated steps.
+    for i = #path, 1, -1 do
+        local ancestorId = path[i]
+        table.insert(self.history, {
+            Type = "static",
+            MenuId = ancestorId,
+            PageIndex = 1,
+            FocusIndex = 1
+        })
     end
 end
 
@@ -290,16 +348,20 @@ function ShopNavigator:jumpToMenu(menuId)
         print("[NativeShop] jumpToMenu called with invalid menu ID: " .. menuId)
         return nil
     end
+
     self.history = {}
+    self.rootStack = {}
     self.dynamicMenuContext = nil
     self.focusMemory = {}
     self.itemOverrides = {}
     self.visibilityOverrides = {}
+
     return self:_setMenuState(menuId, targetRootId)
 end
 
 function ShopNavigator:close()
     self.history = {}
+    self.rootStack = {}
     self.dynamicMenuContext = nil
     self.currentMenuId = nil
     self.currentRootId = nil
@@ -343,19 +405,100 @@ function ShopNavigator:navigateInto(index)
         return nil
     end
 
+    -- Handle LinkMenuId navigation (Jumping to another menu tree)
+    if item.LinkMenuId then
+        local targetRoot = self:getRootIdForMenu(item.LinkMenuId)
+        if not targetRoot then
+            print("[NativeShop] LinkMenuId '" .. item.LinkMenuId .. "' could not be resolved to a registered root.")
+            return nil
+        end
+
+        -- Save the entire state of the current "Application" (Root) to the root stack
+        table.insert(self.rootStack, {
+            RootId = self.currentRootId,
+            MenuId = self.currentMenuId,
+            PageIndex = self.currentPageIndex,
+            History = self.history,
+            DynamicContext = self.dynamicMenuContext,
+            FocusIndex = index
+        })
+
+        -- Reset local state for the new menu tree
+        self.history = {}
+        self.dynamicMenuContext = nil
+        self.currentPageIndex = 1
+
+        -- Determine Target Menu
+        local targetMenuId = item.LinkMenuId
+        if item.LinkPageId then
+            -- Verify LinkPageId exists within the target root
+            if self.menuMap[targetRoot][item.LinkPageId] then
+                targetMenuId = item.LinkPageId
+            else
+                print("[NativeShop] Warning: LinkPageId '" .. item.LinkPageId .. "' not found in root '" .. targetRoot .. "'. Defaulting to '" .. targetMenuId .. "'.")
+            end
+        end
+
+        -- Handle History Simulation (LinkBackToParent)
+        -- If true: We populate self.history with the path from Root -> TargetMenu
+        -- If false: self.history remains empty, so "Back" pops the RootStack immediately.
+        if item.LinkBackToParent and targetMenuId ~= targetRoot then
+            self:_simulateHistoryPath(targetMenuId, targetRoot)
+        end
+
+        local result = self:_setMenuState(targetMenuId, targetRoot)
+        TriggerEvent("native_shop:menu_navigated", { RootId = self.currentRootId, Menu = self:getCurrentMenu(), Index = result, Direction = "forward" })
+        return result
+    end
+
+    if item.Action then
+        if item.Action == "CLOSE" then
+            TriggerEvent("shop:close")
+            return nil
+        elseif item.Action == "BACK" then
+            return self:navigateBack() or 1
+        elseif item.Action == "ROOT" then
+            local rootMenu = self:getRootMenu()
+
+            if rootMenu then
+                local result = self:jumpToMenu(rootMenu.Id)
+                TriggerEvent("native_shop:menu_navigated", { RootId = self.currentRootId, Menu = self:getCurrentMenu(), Index = result, Direction = "forward" })
+                return result
+            else
+                print("[NativeShop] Current root menu not found when handling ROOT action.")
+                return nil
+            end
+        elseif type(item.Action) == "function" then
+            local ok, result = pcall(item.Action, item)
+
+            if not ok then
+                self.onError("Action for item '" .. tostring(item.Id) .. "' failed: " .. tostring(result))
+                return false
+            end
+
+            return result
+        else
+            print("[NativeShop] Item '" .. tostring(item.Id) .. "' has an invalid Action type. Expected 'CLOSE', 'BACK', 'ROOT', or a function.")
+            return nil
+        end
+    end
+
     if item.IsSubmenu then
         self:_saveStateToHistory(index)
         local result = self:_setMenuState(item.Id, self.currentRootId)
         TriggerEvent("native_shop:menu_navigated", { RootId = self.currentRootId, Menu = self:getCurrentMenu(), Index = result, Direction = "forward" })
         return result
     end
+
     return nil
 end
 
 --- Navigates back by popping the last state from the history stack.
+--- Checks local history first, then checks the rootStack for previous menu trees.
 ---@param self ShopNavigator
 ---@return number|nil The focus index to restore, or nil if at the root.
 function ShopNavigator:navigateBack()
+    -- 1. Try to go back within the current menu tree
     if #self.history > 0 then
         local previousState = table.remove(self.history)
         if previousState.Type == "dynamic" then
@@ -371,6 +514,22 @@ function ShopNavigator:navigateBack()
         return previousState.FocusIndex
     end
 
+    -- 2. If local history is empty, check if we linked here from another menu tree
+    if #self.rootStack > 0 then
+        local rootState = table.remove(self.rootStack)
+
+        self.currentRootId = rootState.RootId
+        self.currentMenuId = rootState.MenuId
+        self.currentPageIndex = rootState.PageIndex
+        self.history = rootState.History
+        self.dynamicMenuContext = rootState.DynamicContext
+
+        self:_rebuildCurrentItems()
+        TriggerEvent("native_shop:menu_navigated", { RootId = self.currentRootId, Menu = self:getCurrentMenu(), Index = rootState.FocusIndex, Direction = "back" })
+        return rootState.FocusIndex
+    end
+
+    -- 3. No history left, we are at the top level
     self.dynamicMenuContext = nil
     return nil
 end

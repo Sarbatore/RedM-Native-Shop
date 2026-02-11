@@ -1298,6 +1298,85 @@ local data = {
                         DisabledFooter = "~e~This is the default disabled fallback text"
                     }
                 },
+                {
+                    Id = "DEMO_MENU_LINKS",
+                    Type = "TEXT",
+                    Label = "Links to Menus",
+                    Items = {
+                        {
+                            Id = "MENU_LINK_ONLY",
+                            Type = "TEXT",
+                            Label = "Link to Menu",
+                            LinkMenuId = "TEST_SUB_MENU",
+                            LinkPageId = nil,
+                            Data = {
+                                ItemDescription = "Showcases an example of a menu link. Selecting this item will take you to another menu.",
+                            }
+                        },
+                        {
+                            Id = "MENU_LINK_WITH_PAGE_PARENT",
+                            Type = "TEXT",
+                            Label = "Link to Page (Type 1)",
+                            LinkMenuId = "TEST_SUB_MENU",
+                            LinkPageId = "TEST_PAGE_LINK",
+                            LinkBackToParent = true,
+                            Data = {
+                                ItemDescription = "Showcases an example of a menu link with a specific page. Selecting this item will take you to the specified page in the sub-menu. When navigating back, it will return you to the parent page.",
+                            }
+                        },
+                        {
+                            Id = "MENU_LINK_WITH_PAGE_NO_PARENT",
+                            Type = "TEXT",
+                            Label = "Link to Page (Type 2)",
+                            LinkMenuId = "TEST_SUB_MENU",
+                            LinkPageId = "TEST_PAGE_LINK",
+                            LinkBackToParent = false,
+                            Data = {
+                                ItemDescription = "Showcases an example of a menu link with a specific page. Selecting this item will take you to the specified page in the sub-menu. When navigating back, it will return you back here instead of the parent page.",
+                            }
+                        }
+                    },
+                    Data = {
+                        ItemDescription = "Showcases examples of linking to other menus and pages within those menus to allow you to create organized and interconnected menu systems.",
+                    }
+                },
+                {
+                    Id = "DEMO_ACTIONS",
+                    Type = "TEXT",
+                    Label = "Actions",
+                    Items = {
+                        {
+                            Id = "ACTION_BACK",
+                            Type = "TEXT",
+                            Label = "Go Back",
+                            Action = "BACK",
+                            Data = {
+                                ItemDescription = "Showcases an example of an item that goes back a page when selected.",
+                            }
+                        },
+                        {
+                            Id = "ACTION_ROOT",
+                            Type = "TEXT",
+                            Label = "Go to Root",
+                            Action = "ROOT",
+                            Data = {
+                                ItemDescription = "Showcases an example of an item that goes to the root page when selected.",
+                            }
+                        },
+                        {
+                            Id = "ACTION_CLOSE_MENU",
+                            Type = "TEXT",
+                            Label = "Close Menu",
+                            Action = "CLOSE",
+                            Data = {
+                                ItemDescription = "Showcases an example of an item that closes the menu when selected.",
+                            }
+                        }
+                    },
+                    Data = {
+                        ItemDescription = "Showcases examples of common menu actions such as closing the menu, going back a page, or going to the root menu.",
+                    }
+                }
             },
             Data = {
                 ItemDescription = "A demo menu showcasing various menu features. Have a cool idea for a demo? Report it on the GitHub page!",
@@ -1415,7 +1494,9 @@ local data = {
     },
 }
 
-RequestStreamedTxd("moonshiner_requests", false)
+if not HasStreamedTxdLoaded("moonshiner_requests") then
+    RequestStreamedTxd("moonshiner_requests", false)
+end
 
 local function getDynamicFilterMenu(filter)
     local playerPed = PlayerPedId()
