@@ -78,15 +78,15 @@ local data = {
     AllowWalking = true,
     RepositionCamera = true,
     Tabs = {
-        { Id = "TAB_ALL",          Label = "All",          Source = { Name = "DynamicFilterMenu", Filter = nil } },
-        { Id = "TAB_CANNED_GOODS", Label = "Canned Goods", Source = { Name = "DynamicFilterMenu", Filter = "CANNED_GOODS" } },
-        { Id = "TAB_FRESH_GOODS",  Label = "Fresh Goods",  Source = { Name = "DynamicFilterMenu", Filter = "FRESH_GOODS" } },
-        { Id = "TAB_DRY_GOODS",    Label = "Dry Goods",    Source = { Name = "DynamicFilterMenu", Filter = "DRY_GOODS" } },
-        { Id = "TAB_LIQUOR",       Label = "Liquor",       Source = { Name = "DynamicFilterMenu", Filter = "LIQUOR" } },
+        { Id = "ALL_GOODS",    Label = "All",          Source = { Name = "BasicShopItems", Filter = nil } },
+        { Id = "CANNED_GOODS", Label = "Canned Goods", Source = { Name = "BasicShopItems", Filter = "CANNED_GOODS" } },
+        { Id = "FRESH_GOODS",  Label = "Fresh Goods",  Source = { Name = "BasicShopItems", Filter = "FRESH_GOODS" } },
+        { Id = "DRY_GOODS",    Label = "Dry Goods",    Source = { Name = "BasicShopItems", Filter = "DRY_GOODS" } },
+        { Id = "LIQUOR",       Label = "Liquor",       Source = { Name = "BasicShopItems", Filter = "LIQUOR" } },
     }
 }
 
-local function getDynamicFilterMenu(filter)
+local function getBasicShopItems(filter)
     local items = {}
     for _, item in ipairs(shop_inventory) do
         if not filter or item.Category == filter then
@@ -184,4 +184,4 @@ AddEventHandler("native_shop:item_selected", function(event)
     end
 end)
 
-ShopNavigator:register(data, { DynamicFilterMenu = getDynamicFilterMenu })
+ShopNavigator:register(data, { BasicShopItems = getBasicShopItems })

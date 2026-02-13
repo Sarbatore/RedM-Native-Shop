@@ -5,16 +5,16 @@ local data = {
     AllowWalking = true,
     RepositionCamera = true,
     Tabs = {
-        { Id = "TAB_ALL",        Label = "All",            Source = { Name = "DynamicFilterMenu", Filter = nil } },
-        { Id = "AMBARINO",       Label = "Ambarino",       Source = { Name = "DynamicFilterMenu", Filter = "REG_AMBARINO" } },
-        { Id = "NEW_HANOVER",    Label = "New Hanover",    Source = { Name = "DynamicFilterMenu", Filter = "REG_NEW_HANOVER" } },
-        { Id = "LEMOYNE",        Label = "Lemoyne",        Source = { Name = "DynamicFilterMenu", Filter = "REG_LEMOYNE" } },
-        { Id = "WEST_ELIZABETH", Label = "West Elizabeth", Source = { Name = "DynamicFilterMenu", Filter = "REG_WEST_ELIZABETH" } },
-        { Id = "NEW_AUSTIN",     Label = "New Austin",     Source = { Name = "DynamicFilterMenu", Filter = "REG_NEW_AUSTIN" } },
+        { Id = "REG_ALL",            Label = "All",            Source = { Name = "FastTravelItems", Filter = nil } },
+        { Id = "REG_AMBARINO",       Label = "Ambarino",       Source = { Name = "FastTravelItems", Filter = "REG_AMBARINO" } },
+        { Id = "REG_NEW_HANOVER",    Label = "New Hanover",    Source = { Name = "FastTravelItems", Filter = "REG_NEW_HANOVER" } },
+        { Id = "REG_LEMOYNE",        Label = "Lemoyne",        Source = { Name = "FastTravelItems", Filter = "REG_LEMOYNE" } },
+        { Id = "REG_WEST_ELIZABETH", Label = "West Elizabeth", Source = { Name = "FastTravelItems", Filter = "REG_WEST_ELIZABETH" } },
+        { Id = "REG_NEW_AUSTIN",     Label = "New Austin",     Source = { Name = "FastTravelItems", Filter = "REG_NEW_AUSTIN" } },
     }
 }
 
-local function getDynamicFilterMenu(filter)
+local function getFastTravelItems(filter)
     local playerPed = PlayerPedId()
     local playerPos = GetEntityCoords(playerPed)
 
@@ -73,7 +73,7 @@ AddEventHandler("native_shop:item_selected", function(event)
     end
 end)
 
-ShopNavigator:register(data, { DynamicFilterMenu = getDynamicFilterMenu })
+ShopNavigator:register(data, { FastTravelItems = getFastTravelItems })
 
 Citizen.CreateThread(function()
     while true do
