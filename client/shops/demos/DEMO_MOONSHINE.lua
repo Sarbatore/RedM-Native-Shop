@@ -275,8 +275,11 @@ local data = {
     }
 }
 
-if not HasStreamedTxdLoaded("moonshiner_requests") then
+-- In your script, you may want to load these elsewhere
+-- Perhaps you could move this to a thread that runs during game load
+while HasStreamedTxdLoaded("moonshiner_requests") ~= 1 do
     RequestStreamedTxd("moonshiner_requests", false)
+    Wait(0)
 end
 
 ShopNavigator:register(data)

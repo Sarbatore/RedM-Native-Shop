@@ -78,7 +78,9 @@ function GetItemUiData(item)
         label = struct:GetInt32(0),
         description = struct:GetInt32(8),
         textureId = nil,
-        textureDict = nil
+        textureDict = nil,
+        swatchTextureId = nil,
+        swatchTextureDict = nil,
     }
 
     for i = 0, 4 do
@@ -93,10 +95,12 @@ function GetItemUiData(item)
             local textureDict = ReadString(struct:GetInt64(offset + 8))
             local textureType = struct:GetInt32(offset + 16)
 
-            if textureType == joaat("inventory") then
+            if textureType == `inventory` then
                 data.textureId = texture
                 data.textureDict = textureDict
-                break
+            elseif textureType == `list_layout` then
+                data.swatchTextureId = texture
+                data.swatchTextureDict = textureDict
             end
         else
             break
@@ -122,5 +126,5 @@ end
 ---@return string content The string content
 function ReadString(stringPtr)
     Citizen.InvokeNative(0xDFFC15AA63D04AAB, stringPtr) -- _SET_LAUNCH_PARAM_STRING
-    return Citizen.InvokeNative(0xC59AB6A04333C502)
+    return Citizen.InvokeNative(0xC59AB6A04333C502, Citizen.ResultAsString()) -- _GET_LAUNCH_PARAM_STRING
 end

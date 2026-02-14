@@ -12,7 +12,7 @@ local data = {
     }
 }
 
-local function getBasicShopItems(filter)
+local function getPlayerItems(filter)
     local players = {
         { ID = 1, Name = "PlayerOne",   Distance = 5.0,  IsOnline = true },
         { ID = 2, Name = "PlayerTwo",   Distance = nil,  IsOnline = false },
@@ -53,4 +53,4 @@ local function getBasicShopItems(filter)
     return items
 end
 
-ShopNavigator:register(data, { PlayerItems = getBasicShopItems })
+ShopNavigator:register(data, { PlayerItems = getPlayerItems })

@@ -531,6 +531,11 @@ function ShopUI.Events.HandleItemAction(action)
     local item = ShopNavigator:getItemByIndex(index)
     if not item then return end
 
+    -- The game scripts "nudges" palette selects to trigger regular select events
+    if action == "GENERIC_SHOP_UI_SECONDARY_SELECT" and item.Type == "PALETTE" then
+        return ShopUI.Events.HandleItemSelect()
+    end
+
     local actionToEvent = {
         GENERIC_SHOP_UI_SECONDARY_SELECT = "secondary",
         GENERIC_SHOP_UI_SELECT_OPTION = "option",

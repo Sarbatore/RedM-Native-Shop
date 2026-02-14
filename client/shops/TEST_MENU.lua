@@ -47,6 +47,15 @@ local data = {
                     }
                 },
                 {
+                    Id = "DEMO_GUNSMITH",
+                    Label = "Gunsmith",
+                    LinkMenuId = "DEMO_GUNSMITH",
+                    LinkPageId = nil,
+                    Data = {
+                        ItemDescription = "A gunsmith menu showcasing an example gunsmith setup.",
+                    }
+                },
+                {
                     Id = "DEMO_FAST_TRAVEL",
                     Label = "Fast Travel",
                     LinkMenuId = "DEMO_FAST_TRAVEL",
