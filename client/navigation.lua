@@ -3,7 +3,6 @@
 ---@field generators table A map of { [rootId] = generatorFunction } for dynamic root menus.
 ---@field generatorData table A map of { [rootId] = lastLinkData } to track context for persistence.
 ---@field dataSources table A map of { [rootId] = { [sourceName] = getterFunction } }
----@field contextProviders table A map of { [rootId] = { [providerName] = providerFunction } }
 ---@field menuMap table A map of { [menuId] = menuObject } for fast static menu access.
 ---@field parentMap table A map of { [childId] = parentId } for back-navigation context.
 ---@field itemOverrides table A map of { [menuId] = itemArray } for runtime overrides.
@@ -26,7 +25,6 @@ ShopNavigator.allData = {}
 ShopNavigator.generators = {}
 ShopNavigator.generatorData = {}
 ShopNavigator.dataSources = {}
-ShopNavigator.contextProviders = {}
 ShopNavigator.menuMap = {}
 ShopNavigator.parentMap = {}
 ShopNavigator.itemOverrides = {}
@@ -360,8 +358,7 @@ end
 --- Registers a static shop table.
 ---@param menuData table The root menu configuration object. Must have an Id.
 ---@param dataSources table|nil A map of { [sourceName] = getterFunction }.
----@param contextProviders table|nil A map of { [providerName] = providerFunction }.
-function ShopNavigator:register(menuData, dataSources, contextProviders)
+function ShopNavigator:register(menuData, dataSources)
     if not menuData or not menuData.Id then
         print("[NativeShop] Registration failed. Provided menuData is invalid or has no root Id.")
         return
@@ -373,7 +370,6 @@ function ShopNavigator:register(menuData, dataSources, contextProviders)
     end
     self.allData[rootId] = menuData
     self.dataSources[rootId] = dataSources or {}
-    self.contextProviders[rootId] = contextProviders or {}
     self:_buildLookups(menuData, nil, rootId)
 end
 
@@ -381,8 +377,7 @@ end
 ---@param rootId string The ID for this dynamic menu root.
 ---@param generator function A function(context) returning a menu table.
 ---@param dataSources table|nil A map of { [sourceName] = getterFunction }.
----@param contextProviders table|nil A map of { [providerName] = providerFunction }.
-function ShopNavigator:registerDynamic(rootId, generator, dataSources, contextProviders)
+function ShopNavigator:registerDynamic(rootId, generator, dataSources)
     if not rootId or type(generator) ~= "function" then
         print("[NativeShop] Dynamic registration failed. Invalid ID or generator.")
         return
@@ -394,7 +389,6 @@ function ShopNavigator:registerDynamic(rootId, generator, dataSources, contextPr
 
     self.generators[rootId] = generator
     self.dataSources[rootId] = dataSources or {}
-    self.contextProviders[rootId] = contextProviders or {}
 end
 
 --- Overrides the item list for a specific menu or page at runtime.
