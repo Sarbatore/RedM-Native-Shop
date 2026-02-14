@@ -1,3 +1,5 @@
+-- In a real implementation, you'd want to use dynamic menus instead
+-- This is just to demonstrate how you could set up a complete gunsmith
 local WEAPON_COMPONENTS <const> = {
     AMMO = {
         "AMMO_RIFLE",
