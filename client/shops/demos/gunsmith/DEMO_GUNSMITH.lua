@@ -22,13 +22,36 @@ local function getWeaponItems(filter)
         if not filter or item.Type == filter then
             local name = GetStringFromHashKey(item.Id)
 
-            table.insert(items, {
-                Id = item.Id,
-                Label = name,
-                LinkMenuId = "DEMO_WEAPON_OPTIONS",
-                LinkPageId = nil,
-                LinkData = item,
-            })
+            -- You'll want to improve these, just for demo purposes
+            local owned = HasPedGotWeapon(PlayerPedId(), item.Id, false) == 1
+            local secondary = owned and (IsWeaponOneHanded(item.Id) == 1)
+
+            if owned then
+                table.insert(items, {
+                    Id = item.Id,
+                    Label = name,
+                    Prompts = {
+                        Select = { Visible = true, Label = "Customize" },
+                        Option = { Visible = secondary, Label = "Buy Secondary" }
+                    },
+                    LinkMenuId = "DEMO_WEAPON_OPTIONS",
+                    LinkPageId = nil,
+                    LinkData = item,
+                })
+            else
+                table.insert(items, {
+                    Id = item.Id,
+                    Label = name,
+                    Prompts = {
+                        Select = { Visible = true, Label = "Buy" }
+                    },
+                    Action = function(selected)
+                        GiveWeaponToPed(PlayerPedId(), selected.Id, 9999, true, true, 0, false, 0.5, 1.0, `ADD_REASON_DEFAULT`, true, 0, false)
+                        PostFeedTicker(string.format("Purchased %s", selected.Label))
+                        TriggerEvent("shop:refresh_menu", "DEMO_GUNSMITH")
+                    end,
+                })
+            end
         end
     end
 

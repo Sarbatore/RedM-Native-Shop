@@ -5,109 +5,157 @@ local function getWeaponStats(weapon, component)
     local weaponHash = weapon and joaat(weapon) or 0
     local componentHash = component and joaat(component) or 0
 
-    -- Get the current weapon skill modifier (0-100)
-    local weaponSkill = 100
+    -- Check if the item is a weapon
+    local weaponInfo = GetItemInfo(weaponHash)
+    if weaponInfo.group ~= `WEAPON` then
+        return nil
+    end
+
+    -- Optionally get component info if a component is provided
+    local componentInfo = nil
+    if componentHash ~= 0 then
+        componentInfo = GetItemInfo(componentHash)
+    end
+
+    -- Base stats
+    local baseStats = {
+        damage = 0,
+        range = 0,
+        fireRate = 0,
+        reload = 0,
+        accuracy = 0
+    }
+
+    -- Get weapon familiarity
+    local familiarityMult = 100
     local struct = DataView.ArrayBuffer(16)
     struct:SetInt32(0, `skill`)
     struct:SetInt32(8, GetWeaponStatId(weaponHash))
 
     if Citizen.InvokeNative(0xC48FE1971C9743FF, struct:Buffer()) == 1 then
-        weaponSkill = Citizen.InvokeNative(0xD7AE6C9C9C6AC54D, struct:Buffer(), Citizen.ResultAsFloat())
+        familiarityMult = Citizen.InvokeNative(0xD7AE6C9C9C6AC54D, struct:Buffer(), Citizen.ResultAsFloat())
     end
 
-    -- Implement actual degradation retrieval here
-    local degradation = 0
-
-    local potentialPower = 0
-    local potentialRange = 0
-    local potentialFireRate = 0
-    local potentialReload = 0
-    local potentialAccuracy = 0
-
-    local weaponSkillRange = 0
-    local weaponSkillReload = 0
-    local weaponSkillAccuracy = 0
-
-    -- Gets the stats of the weapon without components with weapon skill applied
-    local weaponEffectIds = GetItemEffectIds(weaponHash)
-    for _, weaponEffectId in ipairs(weaponEffectIds) do
-        local weaponEffect = GetItemEffectData(weaponEffectId)
+    -- Process base weapon effects
+    local effects = GetItemEffectIds(weaponHash)
+    for _, effectId in ipairs(effects) do
+        local effectData = GetItemEffectData(effectId)
 
         -- Retrieves the base stats of the weapon from its effects
-        if weaponEffect.type == -266488916 then
-            potentialPower += weaponEffect.value
-        elseif weaponEffect.type == 1648497600 then
-            potentialRange += weaponEffect.value
-        elseif weaponEffect.type == -1856731002 then
-            potentialFireRate += weaponEffect.value
-        elseif weaponEffect.type == 2038990430 then
-            potentialReload += weaponEffect.value
-        elseif weaponEffect.type == 983649838 then
-            potentialAccuracy += weaponEffect.value
+        if effectData.type == -266488916 then
+            baseStats.damage += effectData.value
+        elseif effectData.type == 1648497600 then
+            baseStats.range += effectData.value
+        elseif effectData.type == -1856731002 then
+            baseStats.fireRate += effectData.value
+        elseif effectData.type == 2038990430 then
+            baseStats.reload += effectData.value
+        elseif effectData.type == 983649838 then
+            baseStats.accuracy += effectData.value
         end
 
-        -- Applies a skill bonus based on the weapon skill percentage for certain stats
-        if weaponEffect.type == 1465168878 then
-            weaponSkillRange += math.floor(weaponEffect.value * (weaponSkill / 100))
-        elseif weaponEffect.type == -1103443887 then
-            weaponSkillReload += math.floor(weaponEffect.value * (weaponSkill / 100))
-        elseif weaponEffect.type == -800430237 then
-            weaponSkillAccuracy += math.floor(weaponEffect.value * (weaponSkill / 100))
+        -- Applies a skill bonus based on the weapon familiarity
+        if effectData.type == 1465168878 then
+            baseStats.range += math.floor(effectData.value * (familiarityMult / 100))
+        elseif effectData.type == -1103443887 then
+            baseStats.reload += math.floor(effectData.value * (familiarityMult / 100))
+        elseif effectData.type == -800430237 then
+            baseStats.accuracy += math.floor(effectData.value * (familiarityMult / 100))
         end
     end
 
-    local componentPower = 0
-    local componentRange = 0
-    local componentAccuracy = 0
+    -- TODO: Iterate through all attached components on the weapon
+    local currentBonus = { damage = 0, accuracy = 0, range = 0 }
+    local potentialBonus = { damage = 0, accuracy = 0, range = 0 }
 
-    -- Gets the stats of the component (optionally)
-    -- This is simplified as compared to the base game, you may want to improve this
-    if component then
+    -- Process preview component effects if a component is provided
+    if componentInfo then
         local componentEffectIds = GetItemEffectIds(componentHash)
-        for _, componentEffectId in ipairs(componentEffectIds) do
-            local componentEffect = GetItemEffectData(componentEffectId)
 
-            if componentEffect.type == 1999781523 then
-                componentPower += componentEffect.value
-            elseif componentEffect.type == 1173003838 then
-                componentAccuracy += componentEffect.value
-            elseif componentEffect.type == -1657343230 then
-                componentRange += componentEffect.value
+        if componentInfo.group == `AMMO` then
+            for _, componentEffectId in ipairs(componentEffectIds) do
+                local componentEffect = GetItemEffectData(componentEffectId)
+
+                if componentEffect.type == 1999781523 then
+                    baseStats.damage += componentEffect.value
+                elseif componentEffect.type == 1173003838 then
+                    baseStats.accuracy += componentEffect.value
+                elseif componentEffect.type == -1657343230 then
+                    baseStats.range += componentEffect.value
+                end
+            end
+        else
+            for _, componentEffectId in ipairs(componentEffectIds) do
+                local componentEffect = GetItemEffectData(componentEffectId)
+
+                if componentEffect.type == 1999781523 then
+                    potentialBonus.damage += componentEffect.value
+                elseif componentEffect.type == 1173003838 then
+                    potentialBonus.accuracy += componentEffect.value
+                elseif componentEffect.type == -1657343230 then
+                    potentialBonus.range += componentEffect.value
+                end
             end
         end
     end
 
-    local newPower = potentialPower
-    local newRange = potentialRange + weaponSkillRange
-    local newAccuracy = potentialAccuracy + weaponSkillAccuracy
-    local newFireRate = potentialFireRate
-    local newReload = potentialReload + weaponSkillReload
+    local finalStat = {
+        damage = baseStats.damage + currentBonus.damage,
+        range = baseStats.range + currentBonus.range,
+        accuracy = baseStats.accuracy + currentBonus.accuracy,
+        fireRate = baseStats.fireRate,
+        reload = baseStats.reload
+    }
+
+    local projectedStat = {
+        damage = baseStats.damage + potentialBonus.damage,
+        range = baseStats.range + potentialBonus.range,
+        accuracy = baseStats.accuracy + potentialBonus.accuracy
+    }
+
+    local maxDisplay = {
+        damage = math.max(finalStat.damage, projectedStat.damage),
+        range = math.max(finalStat.range, projectedStat.range),
+        accuracy = math.max(finalStat.accuracy, projectedStat.accuracy)
+    }
+
+    -- TODO: Get this weapon's degradation
+    local degradation = 0
+    local degradationPenalty = math.ceil(degradation * 10.0)
+
+    -- Apply penalty to current actuals
+    finalStat.damage = finalStat.damage - degradationPenalty
+    finalStat.fireRate = finalStat.fireRate - degradationPenalty
+    finalStat.reload = finalStat.reload - degradationPenalty
+
+    -- Apply penalty to projected stats
+    projectedStat.damage = projectedStat.damage - degradationPenalty
 
     return {
         Power = {
-            Value = newPower + componentPower - degradation,
-            Diff = newPower + componentPower,
-            New = newPower - degradation
+            Value = projectedStat.damage,
+            Diff = maxDisplay.damage,
+            New = finalStat.damage,
         },
         Range = {
-            Value = newRange + componentRange,
-            Diff = 0,
-            New = newRange
+            Value = projectedStat.range,
+            Diff = maxDisplay.range,
+            New = finalStat.range,
         },
         Accuracy = {
-            Value = newAccuracy + componentAccuracy,
-            Diff = 0,
-            New = newAccuracy
+            Value = projectedStat.accuracy,
+            Diff = maxDisplay.accuracy,
+            New = finalStat.accuracy,
         },
         FireRate = {
-            Value = newFireRate - degradation,
-            Diff = newFireRate,
-            New = newFireRate - degradation
+            Value = finalStat.fireRate,
+            Diff = baseStats.fireRate,
+            New = finalStat.fireRate,
         },
         Reload = {
-            Value = newReload - degradation,
-            Diff = newReload,
-            New = newReload - degradation
+            Value = finalStat.reload,
+            Diff = baseStats.reload,
+            New = finalStat.reload,
         },
     }
 end
