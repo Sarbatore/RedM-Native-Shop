@@ -1621,6 +1621,11 @@ function ShopUI.Builder.IsIndexInRange(index, start, range, total)
 end
 
 function ShopUI.Builder.BuildItem(index, item)
+    if not item.Id then
+        print("[NativeShop] Error: Item at index ", index, " is missing an Id")
+        return false
+    end
+
     local ok, swatchResult = pcall(ShopUI.CreateSwatchForItem, item, index)
     if ok then
         item = swatchResult
