@@ -5,11 +5,13 @@ local data = {
     AllowWalking = true,
     RepositionCamera = true,
     Tabs = {
-        { Id = "PLR_ALL",     Label = "All",     Source = { Name = "PlayerItems", Filter = nil } },
-        { Id = "PLR_NEARBY",  Label = "Nearby",  Source = { Name = "PlayerItems", Filter = "PLR_NEARBY" } },
-        { Id = "PLR_ONLINE",  Label = "Online",  Source = { Name = "PlayerItems", Filter = "PLR_ONLINE" } },
-        { Id = "PLR_OFFLINE", Label = "Offline", Source = { Name = "PlayerItems", Filter = "PLR_OFFLINE" } },
-    }
+        { Id = "PLR_ALL",     Label = "All",     All = true },
+        { Id = "PLR_NEARBY",  Label = "Nearby", },
+        { Id = "PLR_ONLINE",  Label = "Online", },
+        { Id = "PLR_OFFLINE", Label = "Offline", },
+    },
+    ItemSource = "PlayerItems",
+    Items = {}
 }
 
 local function getPlayerItems(filter)

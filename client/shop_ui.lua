@@ -448,7 +448,7 @@ function ShopUI.Hide()
     ShopData.state.hiddenMenu = ShopNavigator:getInitialRootId()
     ShopData.state.entryFocusIndex = ShopEvents.state.focusedIndex + 1
 
-    TriggerEvent("native_shop:hiding", ShopNavigator.currentMenuId)
+    TriggerEvent("native_shop:hiding", ShopNavigator:getCurrentMenuId())
     ShopUI.OnShutdown()
 end
 
@@ -456,7 +456,7 @@ function ShopUI.Exit()
     ShopData.state.hiddenMenu = nil
     ShopData.state.entryFocusIndex = 1
 
-    TriggerEvent("native_shop:closing", ShopNavigator.currentMenuId)
+    TriggerEvent("native_shop:closing", ShopNavigator:getCurrentMenuId())
     ShopUI.OnShutdown()
 end
 

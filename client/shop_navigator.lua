@@ -117,13 +117,6 @@ function ShopNavigator:_buildLookups(menu, parentId, rootId)
             end
         end
     end
-    if menu.Tabs then
-        for _, tab in ipairs(menu.Tabs) do
-            if tab.Items or tab.Tabs then
-                self:_buildLookups(tab, menu.Id, rootId)
-            end
-        end
-    end
 end
 
 --- (Private) Determines if a menu item should be visible.
@@ -145,27 +138,6 @@ function ShopNavigator:_getAllItemsForObject(menuOrPage)
     if self.itemOverrides[menuOrPage.Id] then
         return self.itemOverrides[menuOrPage.Id]
     end
-
-    if menuOrPage.Source then
-        local rootId = self.currentRootId
-        if not rootId then return {} end
-
-        local sourceGroup = self.dataSources[rootId] or {}
-        local getter = sourceGroup[menuOrPage.Source.Name]
-
-        if getter then
-            local ok, dynamicItems = pcall(getter, menuOrPage.Source.Filter)
-            if ok then
-                return dynamicItems or {}
-            else
-                self.onError("DataSource '" .. menuOrPage.Source.Name .. "' failed: " .. tostring(dynamicItems))
-            end
-        else
-            print("[NativeShop] DataSource '" .. menuOrPage.Source.Name .. "' not found.")
-        end
-        return {}
-    end
-
     return menuOrPage.Items or {}
 end
 
@@ -191,16 +163,16 @@ function ShopNavigator:_processItem(itemData, menuId)
     local processedItem = shallowCopy(itemData)
     processedItem.MenuId = menuId
 
-    -- Warning: Check for conflict: LinkMenuId AND Items/Tabs/Source
-    if processedItem.LinkMenuId and (processedItem.Items or processedItem.Tabs or processedItem.Source) then
-        print("[NativeShop] Warning: Item '" .. tostring(processedItem.Id) .. "' has both LinkMenuId and Items/Tabs/Source. Ignoring items and using Link.")
+    -- Warning: Check for conflict: LinkMenuId AND Items/ItemSource/Tabs
+    if processedItem.LinkMenuId and (processedItem.Items or processedItem.ItemSource or processedItem.Tabs) then
+        print("[NativeShop] Warning: Item '" .. tostring(processedItem.Id) .. "' has both LinkMenuId and Items/ItemSource/Tabs. Ignoring items and using Link.")
         processedItem.Items = nil
+        processedItem.ItemSource = nil
         processedItem.Tabs = nil
-        processedItem.Source = nil
     end
 
     -- Determine if this item should be treated as a navigation item
-    if processedItem.Items or processedItem.Tabs or processedItem.Source then
+    if processedItem.Items or processedItem.ItemSource or processedItem.Tabs then
         processedItem.HasNavigation = true
         -- Disable if empty (and not hidden logic excluded)
         if self:getItemCount(itemData.Id, self.currentRootId, { IncludeHidden = false }) == 0 then
@@ -216,7 +188,7 @@ function ShopNavigator:_processItem(itemData, menuId)
 end
 
 --- (Private) Rebuilds the `currentItems` list for the current view.
---- This combines items from the menu's `Items` list and the active `Tab`.
+--- Supports both nested items and static items with 'Tab' properties.
 function ShopNavigator:_rebuildCurrentItems()
     local menu = self:_getRawCurrentMenu()
     if not menu then
@@ -225,26 +197,77 @@ function ShopNavigator:_rebuildCurrentItems()
     end
 
     local combinedItems = {}
+    local activeTab = nil
 
-    -- 1. Process the standard Items list
-    local standardItems = self:_getAllItemsForObject(menu)
-    for _, itemData in ipairs(standardItems) do
-        local processed = self:_processItem(itemData, menu.Id)
-        if processed then
-            table.insert(combinedItems, processed)
-        end
+    if menu.Tabs and #menu.Tabs > 0 then
+        activeTab = menu.Tabs[self.currentPageIndex]
     end
 
-    -- 2. Process the active Tab's items
-    if menu.Tabs and #menu.Tabs > 0 then
-        local activeTab = menu.Tabs[self.currentPageIndex]
+    -- ===================================================================
+    -- FETCH RAW ITEMS (Priority: Override -> ItemSource -> Static)
+    -- ===================================================================
+    local rawItems = {}
+
+    if self.itemOverrides[menu.Id] then
+        -- 1. Check for Runtime Overrides first
+        rawItems = self.itemOverrides[menu.Id]
+        -- 2. Check for Dynamic ItemSource
+    elseif menu.ItemSource then
+        local rootId = self.currentRootId
+        local sourceGroup = self.dataSources[rootId] or {}
+        local getter = sourceGroup[menu.ItemSource]
+
+        if getter then
+            -- Pass Tab ID as filter if not "All"
+            local filterArg = (activeTab and not activeTab.All) and activeTab.Id or nil
+            local ok, dynamicItems = pcall(getter, filterArg)
+            if ok then
+                rawItems = dynamicItems or {}
+            else
+                self.onError("ItemSource '" .. menu.ItemSource .. "' failed: " .. tostring(dynamicItems))
+            end
+        else
+            print("[NativeShop] ItemSource '" .. menu.ItemSource .. "' not found.")
+        end
+    else
+        -- 3. Fallback to Static Items
+        rawItems = menu.Items or {}
+    end
+
+    -- ===================================================================
+    -- PROCESS & FILTER
+    -- ===================================================================
+    for _, itemData in ipairs(rawItems) do
+        local isVisibleOnTab = true
+
         if activeTab then
-            local tabItems = self:_getAllItemsForObject(activeTab)
-            for _, itemData in ipairs(tabItems) do
-                local processed = self:_processItem(itemData, menu.Id)
-                if processed then
-                    table.insert(combinedItems, processed)
+            if activeTab.All then
+                isVisibleOnTab = true
+            elseif itemData.Tab then
+                -- Handle Single String or Array of Strings for Tab
+                if type(itemData.Tab) == "table" then
+                    local match = false
+                    for _, tId in ipairs(itemData.Tab) do
+                        if tId == activeTab.Id then
+                            match = true
+                            break
+                        end
+                    end
+                    isVisibleOnTab = match
+                else
+                    isVisibleOnTab = (itemData.Tab == activeTab.Id)
                 end
+            elseif not menu.ItemSource and not self.itemOverrides[menu.Id] then
+                -- If it's a purely static menu (no source, no override),
+                -- items without a specific 'Tab' property usually hide on specific tabs.
+                isVisibleOnTab = false
+            end
+        end
+
+        if isVisibleOnTab then
+            local processed = self:_processItem(itemData, menu.Id)
+            if processed then
+                table.insert(combinedItems, processed)
             end
         end
     end
@@ -285,7 +308,7 @@ function ShopNavigator:_setMenuState(menuId, rootId, data)
             local lastData = self.generatorData[rootId]
 
             if not self:_isSameContext(linkData, lastData) then
-                self.focusMemory[rootId] = nil -- Context switched: Reset focus
+                self.focusMemory[rootId] = nil        -- Context switched: Reset focus
                 self.generatorData[rootId] = linkData -- Update context
             end
         end
@@ -410,11 +433,6 @@ function ShopNavigator:overrideMenuItems(objectId, newItems)
     local rootId = self:getRootIdForMenu(objectId)
     if not rootId then
         print("[NativeShop] overrideMenuItems failed. Object ID '" .. objectId .. "' not found.")
-        return
-    end
-    local menuObj = self.menuMap[rootId][objectId]
-    if menuObj and menuObj.Source then
-        print("[NativeShop] Cannot override menu '" .. objectId .. "' because it uses a dynamic DataSource.")
         return
     end
     self.itemOverrides[objectId] = newItems
@@ -723,14 +741,12 @@ function ShopNavigator:getItemCount(menuId, rootId, options)
     local menu = self.menuMap[rootId] and self.menuMap[rootId][menuId]
     if not menu then return 0 end
 
+    -- Short-circuit: If this menu is backed by an ItemSource, we assume it is populated.
+    -- We cannot effectively count items without running the Source (which might be heavy).
+    if menu.ItemSource then return 1 end
+
     local count = 0
     local itemsToCheck = self:_getAllItemsForObject(menu)
-    if menu.Tabs then
-        for _, tab in ipairs(menu.Tabs) do
-            local tabItems = self:_getAllItemsForObject(tab)
-            for _, tItem in ipairs(tabItems) do table.insert(itemsToCheck, tItem) end
-        end
-    end
 
     for _, item in ipairs(itemsToCheck) do
         if options.IncludeHidden or self:_isItemVisible(item) then
@@ -781,6 +797,12 @@ function ShopNavigator:getCurrentMenu()
         return processedMenu
     end
     return nil
+end
+
+--- Gets the current menu ID.
+---@return string|nil The current menu ID, or nil if none is active.
+function ShopNavigator:getCurrentMenuId()
+    return self.currentMenuId
 end
 
 --- Gets the root menu object for the currently active menu tree.

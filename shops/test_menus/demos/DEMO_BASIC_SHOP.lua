@@ -80,12 +80,13 @@ local data = {
     AllowWalking = true,
     RepositionCamera = true,
     Tabs = {
-        { Id = "ALL_GOODS",    Label = "All",          Source = { Name = "BasicShopItems", Filter = nil } },
-        { Id = "CANNED_GOODS", Label = "Canned Goods", Source = { Name = "BasicShopItems", Filter = "CANNED_GOODS" } },
-        { Id = "FRESH_GOODS",  Label = "Fresh Goods",  Source = { Name = "BasicShopItems", Filter = "FRESH_GOODS" } },
-        { Id = "DRY_GOODS",    Label = "Dry Goods",    Source = { Name = "BasicShopItems", Filter = "DRY_GOODS" } },
-        { Id = "LIQUOR",       Label = "Liquor",       Source = { Name = "BasicShopItems", Filter = "LIQUOR" } },
-    }
+        { Id = "ALL_GOODS",    Label = "All",          All = true },
+        { Id = "CANNED_GOODS", Label = "Canned Goods", },
+        { Id = "FRESH_GOODS",  Label = "Fresh Goods", },
+        { Id = "DRY_GOODS",    Label = "Dry Goods", },
+        { Id = "LIQUOR",       Label = "Liquor", },
+    },
+    ItemSource = "BasicShopItems",
 }
 
 local function getBasicShopItems(filter)

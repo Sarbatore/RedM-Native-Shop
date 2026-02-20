@@ -5,15 +5,16 @@ local data = {
     AllowWalking = true,
     RepositionCamera = true,
     Tabs = {
-        { Id = "WEAPON_ALL",      Label = "All",       Source = { Name = "WeaponItems", Filter = nil } },
-        { Id = "WEAPON_BOW",      Label = "Bows",      Source = { Name = "WeaponItems", Filter = "BOW" } },
-        { Id = "WEAPON_REVOLVER", Label = "Revolvers", Source = { Name = "WeaponItems", Filter = "REVOLVER" } },
-        { Id = "WEAPON_PISTOL",   Label = "Pistols",   Source = { Name = "WeaponItems", Filter = "PISTOL" } },
-        { Id = "WEAPON_REPEATER", Label = "Repeaters", Source = { Name = "WeaponItems", Filter = "REPEATER" } },
-        { Id = "WEAPON_RIFLE",    Label = "Rifles",    Source = { Name = "WeaponItems", Filter = "RIFLE" } },
-        { Id = "WEAPON_SHOTGUN",  Label = "Shotguns",  Source = { Name = "WeaponItems", Filter = "SHOTGUN" } },
-        { Id = "WEAPON_MELEE",    Label = "Melee",     Source = { Name = "WeaponItems", Filter = "MELEE" } },
-    }
+        { Id = "WT_ALL",      Label = "All",       All = true },
+        { Id = "WT_BOW",      Label = "Bows", },
+        { Id = "WT_REVOLVER", Label = "Revolvers", },
+        { Id = "WT_PISTOL",   Label = "Pistols", },
+        { Id = "WT_REPEATER", Label = "Repeaters", },
+        { Id = "WT_RIFLE",    Label = "Rifles", },
+        { Id = "WT_SHOTGUN",  Label = "Shotguns", },
+        { Id = "WT_MELEE",    Label = "Melee", },
+    },
+    ItemSource = "WeaponItems",
 }
 
 local function getWeaponItems(filter)

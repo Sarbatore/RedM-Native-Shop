@@ -19,7 +19,7 @@ local data = {
     Subtitle = "Long Menu",
     AllowWalking = true,
     RepositionCamera = true,
-    Items = getLongMenu(),
+    ItemSource = "LongMenuItems",
 }
 
-ShopNavigator:register(data)
+ShopNavigator:register(data, { LongMenuItems = getLongMenu })

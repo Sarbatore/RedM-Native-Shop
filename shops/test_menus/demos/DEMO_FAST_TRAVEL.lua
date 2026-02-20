@@ -7,13 +7,14 @@ local data = {
     AllowWalking = true,
     RepositionCamera = true,
     Tabs = {
-        { Id = "REG_ALL",            Label = "All",            Source = { Name = "FastTravelItems", Filter = nil } },
-        { Id = "REG_AMBARINO",       Label = "Ambarino",       Source = { Name = "FastTravelItems", Filter = "REG_AMBARINO" } },
-        { Id = "REG_NEW_HANOVER",    Label = "New Hanover",    Source = { Name = "FastTravelItems", Filter = "REG_NEW_HANOVER" } },
-        { Id = "REG_LEMOYNE",        Label = "Lemoyne",        Source = { Name = "FastTravelItems", Filter = "REG_LEMOYNE" } },
-        { Id = "REG_WEST_ELIZABETH", Label = "West Elizabeth", Source = { Name = "FastTravelItems", Filter = "REG_WEST_ELIZABETH" } },
-        { Id = "REG_NEW_AUSTIN",     Label = "New Austin",     Source = { Name = "FastTravelItems", Filter = "REG_NEW_AUSTIN" } },
-    }
+        { Id = "REG_ALL",            Label = "All",            All = true },
+        { Id = "REG_AMBARINO",       Label = "Ambarino", },
+        { Id = "REG_NEW_HANOVER",    Label = "New Hanover", },
+        { Id = "REG_LEMOYNE",        Label = "Lemoyne", },
+        { Id = "REG_WEST_ELIZABETH", Label = "West Elizabeth", },
+        { Id = "REG_NEW_AUSTIN",     Label = "New Austin", },
+    },
+    ItemSource = "FastTravelItems",
 }
 
 local function getFastTravelItems(filter)
