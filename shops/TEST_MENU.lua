@@ -69,7 +69,10 @@ ShopNavigator:register(data)
 
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(0)
+        if IsUiappRunning("shop_menu") == 1 then
+            Citizen.Wait(250)
+            goto continue
+        end
 
         if IsControlJustPressed(0, "INPUT_PHOTO_MODE") and IsUiappRunning("shop_menu") ~= 1 then
             local prompt = 0
@@ -103,5 +106,8 @@ Citizen.CreateThread(function()
                 end)
             end
         end
+
+        Citizen.Wait(0)
+        ::continue::
     end
 end)

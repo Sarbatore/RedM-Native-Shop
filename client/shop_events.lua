@@ -185,21 +185,24 @@ function ShopEvents.GetSelectedTargetMenu()
 end
 
 Citizen.CreateThread(function()
-    local uiEventChannel = joaat("generic_shop_ui_events")
-
     while true do
+        if IsUiappRunning("shop_menu") ~= 1 then
+            Citizen.Wait(25)
+            goto continue
+        end
+
         -- Check condition for processing events
         local shouldSkipProcessing = ShopEvents.GetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED) or (ShopEvents.GetShopEventFlag(ShopEvents.FLAG_NEXT_PAGE) and ShopEvents.GetShopEventFlag(ShopEvents.FLAG_FILTER_CHANGED))
 
         -- Handle all pending UI events in a loop, ensuring we process all events that occurred since the last check
-        while not shouldSkipProcessing and EventsUiIsPending(uiEventChannel) do
+        while not shouldSkipProcessing and EventsUiIsPending(`generic_shop_ui_events`) do
             local msg = DataView.ArrayBuffer(8 * 4)
             msg:SetInt32(0, 0)
             msg:SetInt32(8, 0)
             msg:SetInt32(16, 0)
             msg:SetInt32(24, 0)
 
-            if Citizen.InvokeNative(0x90237103F27F7937, uiEventChannel, msg:Buffer()) ~= 0 then -- EVENTS_UI_PEEK_MESSAGE
+            if Citizen.InvokeNative(0x90237103F27F7937, `generic_shop_ui_events`, msg:Buffer()) ~= 0 then -- EVENTS_UI_PEEK_MESSAGE
                 local eventHash = msg:GetInt32(0)
                 local intParameter = msg:GetInt32(8)
                 local hashParameter = msg:GetInt32(16)
@@ -305,9 +308,10 @@ Citizen.CreateThread(function()
                 end
             end
 
-            EventsUiPopMessage(uiEventChannel)
+            EventsUiPopMessage(`generic_shop_ui_events`)
         end
 
         Citizen.Wait(0)
+        ::continue::
     end
 end)

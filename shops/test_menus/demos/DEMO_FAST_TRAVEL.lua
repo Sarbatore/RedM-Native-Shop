@@ -15,6 +15,10 @@ local data = {
         { Id = "REG_NEW_AUSTIN",     Label = "New Austin", },
     },
     ItemSource = "FastTravelItems",
+    Tick = function ()
+        TriggerEvent("native_shop:refresh_menu", MENU_ID)
+    end,
+    TickMs = 1000,
 }
 
 local function getFastTravelItems(filter)
@@ -74,13 +78,3 @@ local function getFastTravelItems(filter)
 end
 
 ShopNavigator:register(data, { FastTravelItems = getFastTravelItems })
-
-Citizen.CreateThread(function()
-    while true do
-        if ShopNavigator:getRootMenuId() == MENU_ID then
-            TriggerEvent("native_shop:refresh_menu", MENU_ID)
-        end
-
-        Citizen.Wait(1000)
-    end
-end)

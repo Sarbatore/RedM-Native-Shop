@@ -496,6 +496,10 @@ function ShopUI.OnShutdown()
     -- Close the UI app
     CloseUiapp("shop_menu")
 
+    -- Refresh the menu on the next open
+    ShopData.state.rootMenuId = nil
+    ShopData.state.currentMenuId = nil
+
     -- Clear the swatch texture dictionary
     DestroySwatchTextureDict()
 end

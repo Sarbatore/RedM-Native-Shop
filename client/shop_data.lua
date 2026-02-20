@@ -7,20 +7,46 @@ ShopData.state = {
     hasUiInitialized = false,
     hasEnteredFirstScene = false,
     entryFocusIndex = 1,
-    pedForHorseStats = nil,
+    -- pedForHorseStats = nil,
+    onTickRunning = false,
+    onTickTimestamp = 0,
+    rootMenuId = nil,
+    rootMenu = nil,
+    currentMenuId = nil,
+    currentMenu = nil,
 }
 
 function MaintainEvents()
-    local rootMenu = ShopNavigator:getRootMenu()
-    local currentMenu = ShopNavigator:getCurrentMenu()
-    if not rootMenu or not currentMenu then return end
-
     if not ShopData.state.hasUiInitialized then
         ShopUI.Initialize()
 
+        -- Instead of creating a new data view every frame, do it once
+        local struct = DataView.ArrayBuffer(128)
+        struct:SetString(0, "mp@spinning_orbit_cam")
+        struct:SetString(64, "SPINNING_ORBIT_REQUEST")
+
+        ShopData.state.orbitCameraData = struct:Buffer()
         ShopData.state.hasUiInitialized = true
         return
     end
+
+    -- Instead of creating new menu objects every frame, update only when changes are detected
+    local rootMenuId = ShopNavigator:getRootMenuId()
+    if rootMenuId ~= ShopData.state.rootMenuId then
+        ShopData.state.rootMenuId = rootMenuId
+        ShopData.state.rootMenu = ShopNavigator:getRootMenu()
+    end
+
+    local currentMenuId = ShopNavigator:getCurrentMenuId()
+    if currentMenuId ~= ShopData.state.currentMenuId then
+        ShopData.state.currentMenuId = currentMenuId
+        ShopData.state.currentMenu = ShopNavigator:getCurrentMenu()
+    end
+
+    -- Reassign to local variables for easier access and to avoid repeated table lookups
+    local rootMenu = ShopData.state.rootMenu
+    local currentMenu = ShopData.state.currentMenu
+    if not rootMenu or not currentMenu then return end
 
     -- Allow moving around even though the game enforces the shop menu context
     if rootMenu.AllowWalking and not ShopData.state.shuttingDown then
@@ -57,29 +83,53 @@ function MaintainEvents()
     if rootMenu.RepositionCamera and not ShopData.state.shuttingDown then
         Citizen.InvokeNative(0xC3742F1FDF0A6824)
 
-        local struct = DataView.ArrayBuffer(128)
-        struct:SetString(0, "mp@spinning_orbit_cam")
-        struct:SetString(64, "SPINNING_ORBIT_REQUEST")
-
-        if IsCameraAvailable(struct:Buffer()) ~= 1 then
-            if IsCamDataDictLoaded(struct:Buffer()) ~= 1 then
-                LoadCameraDataDict(struct:Buffer())
+        local data = ShopData.state.orbitCameraData
+        if data and IsCameraAvailable(data) ~= 1 then
+            if IsCamDataDictLoaded(data) ~= 1 then
+                LoadCameraDataDict(data)
             end
 
-            if IsCameraAvailable(struct:Buffer()) ~= 1 then
-                CamCreate(struct:Buffer())
+            if IsCameraAvailable(data) ~= 1 then
+                CamCreate(data)
             end
         end
     end
 
-    -- Update horse stats if a ped is available
-    if ShopData.state.pedForHorseStats and not ShopData.state.shuttingDown then
-        if DoesEntityExist(ShopData.state.pedForHorseStats) == 1 then
-            -- This is certainly one part of it, but not the whole thing, still todo
-            Citizen.InvokeNative(0x3FE4FB41EF7D2196, ShopData.state.pedForHorseStats)
-        else
-            ShopData.state.pedForHorseStats = nil
+    -- Trigger the menu's tick function if it has one
+    if currentMenu.Tick and not ShopData.state.shuttingDown then
+        local waitMs = currentMenu.TickMs or 1000
+        if waitMs < 0 then waitMs = 0 end
+
+        local currentTime = GetGameTimer()
+        if (currentTime - ShopData.state.onTickTimestamp) >= waitMs then
+            Citizen.CreateThread(function()
+                ShopData.state.onTickRunning = true
+
+                local success, error = pcall(currentMenu.Tick)
+                if not success then
+                    print("[NativeShop] Error in Tick function: " .. tostring(error))
+                end
+
+                ShopData.state.onTickRunning = false
+            end)
+
+            ShopData.state.onTickTimestamp = currentTime
         end
+    end
+
+    -- Update horse stats if a ped is available
+    -- if ShopData.state.pedForHorseStats and not ShopData.state.shuttingDown then
+    --     if DoesEntityExist(ShopData.state.pedForHorseStats) == 1 then
+    --         -- This is certainly one part of it, but not the whole thing, still todo
+    --         Citizen.InvokeNative(0x3FE4FB41EF7D2196, ShopData.state.pedForHorseStats)
+    --     else
+    --         ShopData.state.pedForHorseStats = nil
+    --     end
+    -- end
+
+    -- Early return if we don't have anything to do to prevent unnecessary flag checks
+    if not ShopEvents.GetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED) then
+        return
     end
 
     -- Happens when navigating to a new scene/menu
@@ -201,8 +251,5 @@ function MaintainEvents()
         ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_COLLECTION_REQUEST)
     end
 
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED) then
-        -- We could handle specific state changes here if needed in the future
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
-    end
+    ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
 end
