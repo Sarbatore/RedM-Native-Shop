@@ -1,7 +1,7 @@
 local data = {
-    Id = "DEMO_SUB_MENU",
-    Title = "SUB MENU DEMO",
-    Subtitle = "This is the main menu",
+    Id = "FEATURE_SUB_MENUS",
+    Title = "FEATURES",
+    Subtitle = "Sub-menus",
     Scene = "MENU_LIST",
     AllowWalking = true,
     RepositionCamera = true,

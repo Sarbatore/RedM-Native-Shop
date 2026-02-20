@@ -1,7 +1,9 @@
+local MENU_ID <const> = "FEATURES_MENU"
+
 local data = {
-    Id = "DEMO_FEATURES",
-    Title = "NATIVE SHOP",
-    Subtitle = "Features",
+    Id = MENU_ID,
+    Title = "FEATURES",
+    Subtitle = "Index",
     Scene = "MENU_LIST",
     AllowWalking = true,
     RepositionCamera = true,
@@ -10,7 +12,7 @@ local data = {
             Id = "TEST_MENUS",
             Scene = "MENU_LIST",
             Label = "Menu Types",
-            LinkMenuId = "DEMO_MENU_TYPES",
+            LinkMenuId = "FEATURE_MENU_TYPES",
             LinkPageId = nil,
             Data = {
                 ItemDescription = "A preview of the different menus. Not all options are supported in every menu. Pricing is included in all items, but can be omitted if desired.",
@@ -20,7 +22,7 @@ local data = {
             Id = "TEST_ITEMS",
             Scene = "MENU_LIST",
             Label = "Item Types",
-            LinkMenuId = "DEMO_ITEM_TYPES",
+            LinkMenuId = "FEATURE_ITEM_TYPES",
             LinkPageId = nil,
             Data = {
                 ItemDescription = "A preview of the different menu items. Used within various menus to showcase different item data options.",
@@ -131,7 +133,7 @@ local data = {
                     Id = "ACTION_LINK_ONLY",
                     Type = "TEXT",
                     Label = "Link to Menu",
-                    LinkMenuId = "DEMO_SUB_MENU",
+                    LinkMenuId = "FEATURE_SUB_MENUS",
                     LinkPageId = nil,
                     Data = {
                         ItemDescription = "Showcases an example of a menu link. Selecting this item will take you to another menu.",
@@ -141,7 +143,7 @@ local data = {
                     Id = "ACTION_LINK_WITH_PAGE_PARENT",
                     Type = "TEXT",
                     Label = "Link to Page (Type 1)",
-                    LinkMenuId = "DEMO_SUB_MENU",
+                    LinkMenuId = "FEATURE_SUB_MENUS",
                     LinkPageId = "TEST_PAGE_LINK",
                     LinkBackToParent = true,
                     Data = {
@@ -152,7 +154,7 @@ local data = {
                     Id = "ACTION_LINK_WITH_PAGE_NO_PARENT",
                     Type = "TEXT",
                     Label = "Link to Page (Type 2)",
-                    LinkMenuId = "DEMO_SUB_MENU",
+                    LinkMenuId = "FEATURE_SUB_MENUS",
                     LinkPageId = "TEST_PAGE_LINK",
                     LinkBackToParent = false,
                     Data = {
@@ -183,3 +185,17 @@ local data = {
 }
 
 ShopNavigator:register(data)
+
+AddEventHandler("native_shop:item_action", function(event)
+    if ShopNavigator:getRootMenuId() ~= MENU_ID then
+        return
+    end
+
+    if event.ID == "PROMPTS_ACTION" or event.ID == "HELD_PROMPTS_ACTION" then
+        if event.ActionParameter then
+            PostFeedTicker(string.format("Action: '%s' with parameter '%s'", event.Action, event.ActionParameter))
+        else
+            PostFeedTicker(string.format("Action: '%s'", event.Action))
+        end
+    end
+end)

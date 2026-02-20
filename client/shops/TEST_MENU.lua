@@ -11,142 +11,25 @@ local data = {
         {
             Id = "FEATURES_MENU",
             Label = "Features",
-            LinkMenuId = "DEMO_FEATURES",
+            LinkMenuId = "FEATURES_MENU",
             LinkPageId = nil,
             Data = {
                 ItemDescription = "A showcase of all the different menu features in one place. Check out the code for details on each feature.",
             }
         },
         {
-            Id = "DEMO_MENU",
+            Id = "DEMOS_MENU",
             Scene = "MENU_LIST",
             Label = "Demos",
             Footer = "senexis.dev/r/RedM-Native-Shop",
+            LinkMenuId = "DEMOS_MENU",
+            LinkPageId = nil,
             Data = {
                 ItemDescription = "A showcase of various menu features in practice. Have a cool idea for a demo? Report it on the GitHub page!",
             },
-            Items = {
-                {
-                    Id = "DEMO_COOLDOWN",
-                    Type = "TEXT",
-                    Label = "Cooldown",
-                    Prompts = {
-                        Select = "Select"
-                    },
-                    Data = {
-                        ItemDescription = "Showcases an example of disabling an item with a cooldown timer displayed in the footer.",
-                    }
-                },
-                {
-                    Id = "DEMO_SHOPS",
-                    Label = "Shops",
-                    Data = {
-                        ItemDescription = "A demo shop menu showcasing item categories, submenus, and a purchase flow.",
-                    },
-                    Items = {
-                        {
-                            Id = "DEMO_BASIC_SHOP",
-                            Label = "Basic Shop",
-                            LinkMenuId = "DEMO_BASIC_SHOP",
-                            LinkPageId = nil,
-                            Data = {
-                                ItemDescription = "A basic shop menu showcasing quantity selection, pricing, and stock management.",
-                            }
-                        },
-                        {
-                            Id = "DEMO_GUNSMITH",
-                            Label = "Gunsmith",
-                            LinkMenuId = "DEMO_GUNSMITH",
-                            LinkPageId = nil,
-                            Data = {
-                                ItemDescription = "A gunsmith menu showcasing an example gunsmith setup.",
-                            }
-                        },
-                        {
-                            Id = "DEMO_CLOTHING",
-                            Type = "STEPPER",
-                            Label = "Wardrobe",
-                            LinkMenuId = "DEMO_CLOTHING",
-                            LinkPageId = nil,
-                            LinkData = function(item)
-                                if not item or not item.Data then return end
-                                local gender = item.Data.StepperValue or 1
-                                return { Gender = gender }
-                            end,
-                            Data = {
-                                ItemDescription = "A demo clothing menu showcasing dynamic generation of items based on the selected gender.",
-                                StepperOptions = { "Male", "Female" },
-                                StepperValue = 1,
-                                StepperVisible = true,
-                                StepperTextureVisible = false,
-                            }
-                        },
-                        {
-                            Id = "DEMO_MOONSHINE",
-                            Label = "Moonshine",
-                            LinkMenuId = "DEMO_MOONSHINE",
-                            LinkPageId = nil,
-                            Data = {
-                                ItemDescription = "A demo moonshine business menu aiming to recreate the moonshine production menus.",
-                            }
-                        }
-                    }
-                },
-                {
-                    Id = "DEMO_FAST_TRAVEL",
-                    Label = "Fast Travel",
-                    LinkMenuId = "DEMO_FAST_TRAVEL",
-                    LinkPageId = nil,
-                    Data = {
-                        ItemDescription = "A demo fast travel menu showcasing dynamic items and filtering. Move to see the distances update in real time.",
-                    }
-                },
-                {
-                    Id = "DEMO_PLAYERS",
-                    Label = "Players",
-                    LinkMenuId = "DEMO_PLAYERS",
-                    LinkPageId = nil,
-                    Data = {
-                        ItemDescription = "A demo player list menu showcasing dynamic items based on nearby players, with a dynamic context menu for player interactions.",
-                    }
-                },
-                {
-                    Id = "DEMO_MANUAL_BACK",
-                    Type = "TEXT",
-                    Label = "Manual Back",
-                    Prompts = {
-                        Back = { Visible = false }
-                    },
-                    Data = {
-                        ItemDescription = "Showcases an example of manually managing the back prompt. In this case, the back prompt is hidden and a specific menu item is used to go back.",
-                    },
-                    Items = {
-                        {
-                            Id = "ACTION_BACK",
-                            Type = "TEXT",
-                            Label = "Go Back",
-                            Action = "BACK",
-                            Data = {
-                                ItemDescription = "This is the only way to go back.",
-                            }
-                        },
-                    }
-                },
-                {
-                    Id = "DEMO_LONG_MENU",
-                    Scene = "MENU_LIST",
-                    Label = "Long Menu",
-                    Footer = "~e~Caution: This may cause a slight stutter to occur",
-                    LinkMenuId = "DEMO_LONG_MENU",
-                    LinkPageId = nil,
-                    Data = {
-                        ItemDescription = "Showcases a menu with a large number of items to test scrolling behavior.",
-                    }
-                }
-            },
         },
         {
-            Id = "SENEXIS_MENU",
+            Id = "SUPPORT_MENU",
             Scene = "MENU_LIST",
             Label = "Support me!",
             Data = {
@@ -182,69 +65,7 @@ local data = {
     },
 }
 
-local actionCooldownSeconds = -1
-
-local function getActionCooldownFooter(secondsLeft)
-    local minutes = math.floor((secondsLeft % 3600) / 60)
-    local seconds = secondsLeft % 60
-
-    return string.format("~e~You can use this again in %02d:%02d", minutes, seconds)
-end
-
-AddEventHandler("native_shop:item_selected", function(event)
-    if ShopNavigator:getRootMenuId() ~= MENU_ID then
-        return
-    end
-
-    if event.ID == "DEMO_COOLDOWN" then
-        actionCooldownSeconds = 5
-
-        local footer = getActionCooldownFooter(actionCooldownSeconds)
-        TriggerEvent("shop:disable_item", "DEMO_COOLDOWN")
-        TriggerEvent("shop:set_item_footer", "DEMO_COOLDOWN", footer)
-
-        PostFeedTicker(string.format("Cooling down action for %d seconds", actionCooldownSeconds))
-    end
-end)
-
-AddEventHandler("native_shop:item_action", function(event)
-    if ShopNavigator:getRootMenuId() ~= MENU_ID then
-        return
-    end
-
-    if event.ID == "PROMPTS_ACTION" or event.ID == "HELD_PROMPTS_ACTION" then
-        if event.ActionParameter then
-            PostFeedTicker(string.format("Action: '%s' with parameter '%s'", event.Action, event.ActionParameter))
-        else
-            PostFeedTicker(string.format("Action: '%s'", event.Action))
-        end
-    end
-end)
-
 ShopNavigator:register(data)
-
-Citizen.CreateThread(function()
-    while true do
-        -- For performance reasons, only trigger events when the roleplay text menu is open
-        if ShopNavigator:getRootMenuId() == MENU_ID then
-            if actionCooldownSeconds == 0 then
-                actionCooldownSeconds = -1
-
-                TriggerEvent("shop:enable_item", "DEMO_COOLDOWN")
-                TriggerEvent("shop:clear_item_footer", "DEMO_COOLDOWN")
-            elseif actionCooldownSeconds > 0 then
-                actionCooldownSeconds = actionCooldownSeconds - 1
-
-                local footer = getActionCooldownFooter(actionCooldownSeconds)
-
-                TriggerEvent("shop:disable_item", "DEMO_COOLDOWN")
-                TriggerEvent("shop:set_item_footer", "DEMO_COOLDOWN", footer)
-            end
-        end
-
-        Citizen.Wait(1000)
-    end
-end)
 
 Citizen.CreateThread(function()
     while true do

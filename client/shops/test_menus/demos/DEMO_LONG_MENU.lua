@@ -15,7 +15,7 @@ end
 local data = {
     Id = "DEMO_LONG_MENU",
     Scene = "MENU_LIST",
-    Title = "NATIVE SHOP",
+    Title = "DEMOS",
     Subtitle = "Long Menu",
     AllowWalking = true,
     RepositionCamera = true,

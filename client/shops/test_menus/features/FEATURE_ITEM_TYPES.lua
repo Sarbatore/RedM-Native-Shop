@@ -151,10 +151,10 @@ local function getTestItemsMenus()
 end
 
 local data = {
-    Id = "DEMO_ITEM_TYPES",
+    Id = "FEATURE_ITEM_TYPES",
     Scene = "MENU_LIST",
-    Title = "ITEM TYPES",
-    Subtitle = "Select a test item",
+    Title = "FEATURES",
+    Subtitle = "Item Types",
     Items = getTestItemsMenus()
 }
 
