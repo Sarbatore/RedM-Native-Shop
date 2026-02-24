@@ -431,7 +431,7 @@ function ShopUI.OnOpen()
         while IsUiappRunning("shop_menu") == 1 do
             Citizen.Wait(0)
 
-            local success, error = pcall(MaintainEvents)
+            local success, error = pcall(ShopData.MaintainEvents)
 
             -- If something went wrong, close the UI to prevent the user from getting stuck
             if not success then
@@ -3207,7 +3207,10 @@ function ShopUI.Scene.SetPalette(id, value, items)
     ShopUI.CreatePaletteItemListBinding()
 
     for index, item in ipairs(items) do
-        local key = item.TextHash or ShopUI.CreateTextEntry(id, index, item.Text or "")
+        local key = string.format("NSUI_%s_%s", id, index)
+        if DoesTextLabelExist(key) ~= 1 then
+            AddTextEntry(key, item.Text or "")
+        end
 
         local entry = DatabindingAddDataContainer(ShopUI.bindings.dscPaletteItemListEntries, string.format("paletteEntry_%d", index))
         DatabindingAddDataBool(entry, "visible", item.Visible == true)

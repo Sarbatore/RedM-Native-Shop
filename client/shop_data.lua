@@ -16,7 +16,7 @@ ShopData.state = {
     currentMenu = nil,
 }
 
-function MaintainEvents()
+function ShopData.MaintainEvents()
     if not ShopData.state.hasUiInitialized then
         ShopUI.Initialize()
 
