@@ -220,11 +220,20 @@ function ShopNavigator:_rebuildCurrentItems()
         if getter then
             -- Pass Tab ID as filter if not "All"
             local filterArg = (activeTab and not activeTab.All) and activeTab.Id or nil
-            local ok, dynamicItems = pcall(getter, filterArg)
-            if ok then
-                rawItems = dynamicItems or {}
-            else
-                self.onError("ItemSource '" .. menu.ItemSource .. "' failed: " .. tostring(dynamicItems))
+
+            local generationOk, generatedItems = pcall(getter, filterArg)
+            if not generationOk or not generatedItems then
+                self.onError("ItemSource '" .. menu.ItemSource .. "' failed: " .. tostring(generatedItems))
+                return
+            end
+
+            for i, rawItem in ipairs(generatedItems) do
+                local validationOk, validatedItem = pcall(ShopValidator.Item, rawItem)
+                if not validationOk or not validatedItem then
+                    self.onError("Item at index " .. i .. " from source '" .. menu.ItemSource .. "' failed validation: " .. tostring(validatedItem))
+                else
+                    table.insert(rawItems, validatedItem)
+                end
             end
         else
             print("[NativeShop] ItemSource '" .. menu.ItemSource .. "' not found.")
@@ -316,20 +325,26 @@ function ShopNavigator:_setMenuState(menuId, rootId, data)
 
         -- 2. Execute Generator
         local contextToUse = linkData or self.generatorData[rootId]
-        local success, newMenuData = pcall(self.generators[rootId], contextToUse)
 
-        if not success or not newMenuData then
-            self.onError("Generator for root '" .. rootId .. "' failed or returned nil: " .. tostring(newMenuData))
+        local generationOk, generatedMenu = pcall(self.generators[rootId], contextToUse)
+        if not generationOk or not generatedMenu then
+            self.onError("Generator for root '" .. rootId .. "' failed or returned nil: " .. tostring(generatedMenu))
             return 1
         end
 
-        newMenuData.Id = rootId
+        local validateOk, validatedMenu = pcall(ShopValidator.Menu, generatedMenu)
+        if not validateOk then
+            self.onError("Generated menu for root '" .. rootId .. "' failed validation: " .. tostring(validatedMenu))
+            return 1
+        end
+
+        validatedMenu.Id = rootId
 
         -- 3. Update Lookups
         self.menuMap[rootId] = {}
         self.parentMap[rootId] = {}
-        self.allData[rootId] = newMenuData
-        self:_buildLookups(newMenuData, nil, rootId)
+        self.allData[rootId] = validatedMenu
+        self:_buildLookups(validatedMenu, nil, rootId)
     end
 
     if not self.menuMap[rootId] or not self.menuMap[rootId][menuId] then
@@ -395,18 +410,19 @@ end
 ---@param menuData table The root menu configuration object. Must have an Id.
 ---@param dataSources table|nil A map of { [sourceName] = getterFunction }.
 function ShopNavigator:register(menuData, dataSources)
-    if not menuData or not menuData.Id then
-        print("[NativeShop] Registration failed. Provided menuData is invalid or has no root Id.")
+    local ok, result = pcall(ShopValidator.Menu, menuData)
+    if not ok then
+        self.onError("Menu validation failed: " .. tostring(result))
         return
     end
-    local rootId = menuData.Id
+    local rootId = result.Id
     if self.allData[rootId] or self.generators[rootId] then
         print("[NativeShop] A menu with root ID '" .. rootId .. "' has already been registered. Skipping.")
         return
     end
-    self.allData[rootId] = menuData
+    self.allData[rootId] = result
     self.dataSources[rootId] = dataSources or {}
-    self:_buildLookups(menuData, nil, rootId)
+    self:_buildLookups(result, nil, rootId)
 end
 
 --- Registers a dynamic shop generator.
@@ -473,21 +489,28 @@ function ShopNavigator:refreshRoot(rootId)
     end
 
     local context = self.generatorData[rootId]
-    local success, result = pcall(self.generators[rootId], context)
 
-    if success and result then
-        result.Id = rootId
-        self.menuMap[rootId] = {}
-        self.parentMap[rootId] = {}
-        self.allData[rootId] = result
-        self:_buildLookups(result, nil, rootId)
+    local generationOk, generatedMenu = pcall(self.generators[rootId], context)
+    if not generationOk or not generatedMenu then
+        self.onError("Generator for root '" .. rootId .. "' failed during refresh: " .. tostring(generatedMenu))
+        return
+    end
 
-        -- If the user is currently looking at this root, rebuild the view
-        if self.currentRootId == rootId then
-            self:_rebuildCurrentItems()
-        end
-    else
-        self.onError("Failed to refresh root '" .. rootId .. "': " .. tostring(result))
+    local validateOk, validatedMenu = pcall(ShopValidator.Menu, generatedMenu)
+    if not validateOk then
+        self.onError("Generated menu for root '" .. rootId .. "' failed validation during refresh: " .. tostring(validatedMenu))
+        return
+    end
+
+    validatedMenu.Id = rootId
+    self.menuMap[rootId] = {}
+    self.parentMap[rootId] = {}
+    self.allData[rootId] = validatedMenu
+    self:_buildLookups(validatedMenu, nil, rootId)
+
+    -- If the user is currently looking at this root, rebuild the view
+    if self.currentRootId == rootId then
+        self:_rebuildCurrentItems()
     end
 end
 

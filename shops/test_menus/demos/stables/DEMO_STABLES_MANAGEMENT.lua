@@ -36,7 +36,6 @@ local function getHorseSlots()
 
         table.insert(items, {
             Id = "HORSE_SLOT_" .. item.Id,
-            Slot = item.Id,
             Type = "STABLE",
             Label = slotLabel,
             Footer = footer,
@@ -52,6 +51,9 @@ local function getHorseSlots()
             Prompts = {
                 Select = selectPromptLabel,
                 Toggle = { Visible = togglePromptVisible, Label = togglePromptLabel }
+            },
+            Metadata = {
+                Slot = item.Id,
             }
         })
     end
@@ -72,8 +74,9 @@ AddEventHandler("native_shop:item_action", function(event)
 
     if event.Action == "toggle" then
         for _, item in ipairs(INVENTORY_DEMO) do
-            local slot = event.Index
             local label = event.Item and event.Item.Label
+            local metadata = event.Item and event.Item.Metadata or {}
+            local slot = metadata.Slot or event.Index
             if item.Id == slot then
                 if item.Active then
                     item.Active = false

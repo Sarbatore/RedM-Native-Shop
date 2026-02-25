@@ -51,7 +51,6 @@ local function getFastTravelItems(filter)
             local description = GetStringFromHashKey(place.Description)
 
             table.insert(items, {
-                _DISTANCE = distance,
                 Id = "FAST_TRAVEL_" .. place.Id,
                 Type = "TEXT",
                 Label = name,
@@ -65,13 +64,17 @@ local function getFastTravelItems(filter)
                 },
                 Action = function(item)
                     PostFeedTicker(string.format("Fast travelling to %s...", item.Label))
-                end
+                end,
+                Metadata = {
+                    Distance = distance,
+                }
             })
         end
     end
 
     table.sort(items, function(a, b)
-        return a._DISTANCE < b._DISTANCE
+        if not a.Metadata or not b.Metadata then return false end
+        return a.Metadata.Distance < b.Metadata.Distance
     end)
 
     return items

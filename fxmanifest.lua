@@ -11,10 +11,12 @@ license "GNU GPL v3"
 
 client_scripts {
     -- Load modules in dependency order
+    "client/config.lua",
     "client/util_dataview.lua",
     "client/util_items.lua",
     "client/util_ticker.lua",
     "client/util_toasts.lua",
+    "client/shop_validator.lua",
     "client/shop_events.lua",
     "client/shop_navigator.lua",
     "client/shop_ui.lua",

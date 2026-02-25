@@ -35,7 +35,6 @@ local function getSwatches(components)
         local txd, txn = componentItem:GetSwatchTexture()
 
         table.insert(swatches, {
-            Id = component,
             Visible = true,
             Text = name,
             TextureDictionary = txd,

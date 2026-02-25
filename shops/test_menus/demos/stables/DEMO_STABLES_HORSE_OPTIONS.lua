@@ -22,7 +22,7 @@ local function getItems(items)
     for _, item in ipairs(items) do
         if type(item) == "table" then
             table.insert(itemList, {
-                Id = item,
+                Id = item.Id,
                 Label = GetStringFromHashKey(item.Id),
                 Items = getItems(item.Items),
                 Data = {

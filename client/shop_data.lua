@@ -54,17 +54,6 @@ function ShopData.MaintainEvents()
         SetControlContext(9, "OnlinePlayerMenu")
         SetControlContext(10, 0)
 
-        -- Disable certain controls that would interfere with the shop UI but wouldn't with player menu
-        DisableControlAction(0, "INPUT_MAP", true)
-        DisableControlAction(0, "INPUT_SELECT_ITEM_WHEEL", true)
-        DisableControlAction(0, "INPUT_FRONTEND_PAUSE", true)
-        DisableControlAction(0, "INPUT_FRONTEND_PAUSE_ALTERNATE", true)
-        DisableControlAction(0, "INPUT_INTERACT_LOCKON", false)
-
-        -- Prevent attacking while in the shop UI
-        DisableControlAction(0, "INPUT_AIM", false)
-        DisableControlAction(0, "INPUT_ATTACK", false)
-
         -- The player menu additionally disables these controls
         DisableControlAction(0, "INPUT_NEXT_CAMERA", false)
         DisableControlAction(0, "INPUT_HORSE_SPRINT", false)
@@ -77,6 +66,22 @@ function ShopData.MaintainEvents()
         DisableControlAction(0, "INPUT_RADIAL_MENU_SLOT_NAV_PREV", false)
         DisableControlAction(0, "INPUT_COVER", false)
         DisableControlAction(0, "INPUT_OPEN_WHEEL_MENU", false)
+    end
+
+    if not ShopData.state.shuttingDown then
+        -- Disables miscellaneous prompts
+        UiPromptEnablePromptTypeThisFrame(0)
+
+        -- Disable certain controls that would interfere with the shop UI but wouldn't with player menu
+        DisableControlAction(0, "INPUT_MAP", true)
+        DisableControlAction(0, "INPUT_SELECT_ITEM_WHEEL", true)
+        DisableControlAction(0, "INPUT_FRONTEND_PAUSE", true)
+        DisableControlAction(0, "INPUT_FRONTEND_PAUSE_ALTERNATE", true)
+        DisableControlAction(0, "INPUT_INTERACT_LOCKON", false)
+
+        -- Prevent attacking while in the shop UI
+        DisableControlAction(0, "INPUT_AIM", false)
+        DisableControlAction(0, "INPUT_ATTACK", false)
     end
 
     -- Use orbit camera (focuses the camera properly) when in the shop UI

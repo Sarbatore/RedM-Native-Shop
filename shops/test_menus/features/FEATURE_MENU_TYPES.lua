@@ -96,10 +96,10 @@ local function getTestMenusItems(id, shouldUseSwatch)
 
     local vehicleStats = {
         Primary = true,
+        Description = "Test Description",
         MaxSpeed = "Test MaxSpeed",
         Acceleration = "Test Acceleration",
         Steering = "Test Steering",
-        ItemDescription = "Test Description",
     }
 
     local weaponStats = {
@@ -745,7 +745,7 @@ local function getTestMenusMenus()
                     Visible = true,
                     Stats = false,
                     Text = "Horse stats infobox item",
-                    ItemDescription = "This is a test description for the horse stats info box.",
+                    Description = "This is a test description for the horse stats info box.",
                     TipText = "Horse stats infobox tip"
                 },
                 HorseStats = {

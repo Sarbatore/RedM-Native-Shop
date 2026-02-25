@@ -31,7 +31,6 @@ local validItemTypes = {
     "HAIR",
     "INVENTORY",
     "PALETTE",
-    "SADDLE",
     "STABLE",
     "STEPPER",
     "TEXT",
@@ -1714,7 +1713,6 @@ function ShopUI.Builder.FillItem(entry, item)
         HAIR = ShopUI.Builder.FillHairItem,
         INVENTORY = ShopUI.Builder.FillInventoryItem,
         PALETTE = ShopUI.Builder.FillPaletteItem,
-        SADDLE = ShopUI.Builder.FillSaddleItem,
         STABLE = ShopUI.Builder.FillStableItem,
         STEPPER = ShopUI.Builder.FillStepperItem,
         TEXT = ShopUI.Builder.FillTextItem,
@@ -1883,31 +1881,6 @@ function ShopUI.Builder.FillPaletteItem(entry, item)
         DatabindingAddDataString(entry, "iconTexture", data.IconTexture or "")
         DatabindingAddDataString(entry, "iconTextureDict", data.IconTextureDictionary or "")
     end
-
-    return entry
-end
-
-function ShopUI.Builder.FillSaddleItem(entry, item)
-    local data = item.Data or {}
-
-    local id = item.Id
-    local label = item.LabelHash
-    if not label or label == 0 then
-        label = ShopUI.CreateTextEntry("SADDLE", id, item.Label or id)
-    end
-
-    DatabindingAddDataString(entry, "uiItemID", id)
-    DatabindingAddDataString(entry, "uiItemType", "SADDLE")
-    DatabindingAddDataHash(entry, "uiItemGsui", "GSUI_SADDLE_LIST_ITEM")
-    DatabindingAddDataHash(entry, "uiItemLabel", label)
-    DatabindingAddDataBool(entry, "itemEnabled", not ShopUI.IsItemDisabled(item))
-
-    DatabindingAddDataHash(entry, "backTexture", data.BackTexture or 0)
-    DatabindingAddDataHash(entry, "backTextureColour", data.BackTextureColour or "COLOR_WHITE")
-    DatabindingAddDataHash(entry, "backTextureDict", data.BackTextureDictionary or 0)
-    DatabindingAddDataBool(entry, "backTextureVisible", data.BackTextureVisible or data.BackTexture ~= nil)
-    DatabindingAddDataHash(entry, "frontSlotTextureColour", data.FrontSlotTextureColour or "COLOR_WHITE")
-    DatabindingAddDataBool(entry, "frontSlotTextureVisible", data.FrontSlotTextureVisible or data.FrontSlotTexture ~= nil)
 
     return entry
 end
