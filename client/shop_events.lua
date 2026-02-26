@@ -37,21 +37,18 @@ ShopEvents.state = {
     collectionRequestParameter = 0
 }
 
-function ShopEvents.GetShopEventFlags()
-    return ShopEvents.state.eventFlags
+function ShopEvents.PopEventFlags()
+    local flags = ShopEvents.state.eventFlags
+    ShopEvents.state.eventFlags = 0
+    return flags
 end
 
-function ShopEvents.GetShopEventFlag(flag)
+function ShopEvents.GetEventFlag(flag)
     return ShopEvents.state.eventFlags & flag ~= 0
 end
 
-function ShopEvents.SetShopEventFlag(flag)
+function ShopEvents.SetEventFlag(flag)
     ShopEvents.state.eventFlags = ShopEvents.state.eventFlags | flag
-    return ShopEvents.state.eventFlags
-end
-
-function ShopEvents.ClearShopEventFlag(flag)
-    ShopEvents.state.eventFlags = ShopEvents.state.eventFlags & (~flag)
     return ShopEvents.state.eventFlags
 end
 
@@ -200,7 +197,7 @@ Citizen.CreateThread(function()
         end
 
         -- Check condition for processing events
-        local shouldSkipProcessing = ShopEvents.GetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED) or (ShopEvents.GetShopEventFlag(ShopEvents.FLAG_NEXT_PAGE) and ShopEvents.GetShopEventFlag(ShopEvents.FLAG_FILTER_CHANGED))
+        local shouldSkipProcessing = ShopEvents.GetEventFlag(ShopEvents.FLAG_STATE_CHANGED) or (ShopEvents.GetEventFlag(ShopEvents.FLAG_NEXT_PAGE) and ShopEvents.GetEventFlag(ShopEvents.FLAG_FILTER_CHANGED))
 
         -- Handle all pending UI events in a loop, ensuring we process all events that occurred since the last check
         while not shouldSkipProcessing and EventsUiIsPending(`generic_shop_ui_events`) do
@@ -220,8 +217,8 @@ Citizen.CreateThread(function()
                 local hashParameterType = ShopEvents.GetHashParameterType(hashParameter)
 
                 if eventType == "TAB_PAGE_DECREMENT" or eventType == "TAB_PAGE_INCREMENT" then
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_FILTER_CHANGED)
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_FILTER_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventType == "DATA_ADJUSTABLE_CHANGED" then
                     ShopEvents.state.adjustableIndex = intParameter
                     ShopEvents.state.adjustableParameter = hashParameter
@@ -230,8 +227,8 @@ Citizen.CreateThread(function()
                         ShopEvents.state.focusedDatastore = datastoreId
                     end
 
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE)
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventType == "ITEM_FOCUSED" then
                     ShopEvents.state.focusedDatastore = datastoreId
                     ShopEvents.state.focusedIndex = intParameter
@@ -241,12 +238,12 @@ Citizen.CreateThread(function()
                     -- To prevent the affecting our events, we check if it is valid or restore from index
                     if ShopEvents.EnsureFocusedItemDatastore() then
                         if hashParameterType == "GENERIC_SHOP_UI_NEXT_PAGE" then
-                            ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEXT_PAGE)
+                            ShopEvents.SetEventFlag(ShopEvents.FLAG_NEXT_PAGE)
                         else
-                            ShopEvents.SetShopEventFlag(ShopEvents.FLAG_FOCUSED)
+                            ShopEvents.SetEventFlag(ShopEvents.FLAG_FOCUSED)
                         end
 
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                        ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                     else
                         print("[NativeShop] Focused item datastore could not be resolved:")
                         print("  Datastore ID: " .. tostring(datastoreId))
@@ -258,8 +255,8 @@ Citizen.CreateThread(function()
                     ShopEvents.state.unfocusedIndex = intParameter
                     ShopEvents.state.unfocusedItem = ShopEvents.GetUnfocusedItemId()
 
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_UNFOCUSED)
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_UNFOCUSED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventType == "ITEM_SELECTED" then
                     ShopEvents.state.selectedDatastore = datastoreId
                     ShopEvents.state.selectedIndex = intParameter
@@ -267,20 +264,20 @@ Citizen.CreateThread(function()
                     ShopEvents.state.lastAction = hashParameterType
 
                     if hashParameterType == "GENERIC_SHOP_UI_EXIT" then
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_EXIT)
+                        ShopEvents.SetEventFlag(ShopEvents.FLAG_EXIT)
                     end
 
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_ITEM_SELECTED)
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_ITEM_SELECTED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventType == "NEW_PAGE" then
                     if hashParameterType == "GENERIC_SHOP_UI_NEXT_SCENE" then
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEXT_SCENE)
+                        ShopEvents.SetEventFlag(ShopEvents.FLAG_NEXT_SCENE)
                     elseif hashParameterType == "GENERIC_SHOP_UI_PREV_SCENE" then
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_PREV_SCENE)
+                        ShopEvents.SetEventFlag(ShopEvents.FLAG_PREV_SCENE)
                     elseif hashParameterType == "GENERIC_SHOP_UI_NEXT_PAGE" then
-                        ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEXT_SCENE)
+                        ShopEvents.SetEventFlag(ShopEvents.FLAG_NEXT_SCENE)
                     end
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventType == "NEW_ACTIVITY" then
                     if hashParameterType == "GENERIC_SHOP_UI_ENTRY" then
                         ShopEvents.state.flagUiEntry = true
@@ -294,17 +291,17 @@ Citizen.CreateThread(function()
                     end
                 elseif eventType == "PAGED_COLLECTION_RESET" then
                     ShopEvents.state.collectionId = hashParameter
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEW_COLLECTION)
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_NEW_COLLECTION)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventType == "PAGED_COLLECTION_INITIALIZED" then
                     ShopEvents.state.collectionId = hashParameter
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_NEW_COLLECTION)
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_NEW_COLLECTION)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 elseif eventType == "PAGED_COLLECTION_REQUEST" then
                     ShopEvents.state.collectionRequestParameter = hashParameter
                     ShopEvents.state.collectionStartIndex = intParameter
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_COLLECTION_REQUEST)
-                    ShopEvents.SetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_COLLECTION_REQUEST)
+                    ShopEvents.SetEventFlag(ShopEvents.FLAG_STATE_CHANGED)
                 else
                     print("[NativeShop] Received unhandled event type:")
                     print("  Event ID: " .. tostring(eventHash))

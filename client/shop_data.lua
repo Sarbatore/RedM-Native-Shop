@@ -1,6 +1,7 @@
 ShopData = {}
 
 ShopData.state = {
+    eventFlags = 0,
     shuttingDown = false,
     hiddenMenu = nil,
     orbitCameraData = nil,
@@ -15,6 +16,10 @@ ShopData.state = {
     currentMenuId = nil,
     currentMenu = nil,
 }
+
+function ShopData.GetEventFlag(flag)
+    return ShopData.state.eventFlags & flag ~= 0
+end
 
 function ShopData.MaintainEvents()
     if not ShopData.state.hasUiInitialized then
@@ -132,13 +137,17 @@ function ShopData.MaintainEvents()
     --     end
     -- end
 
+    -- Pop the event flags for this frame so we can react to them
+    -- This prevents race conditions by flags getting cleared before we can react to them
+    ShopData.state.eventFlags = ShopEvents.PopEventFlags()
+
     -- Early return if we don't have anything to do to prevent unnecessary flag checks
-    if not ShopEvents.GetShopEventFlag(ShopEvents.FLAG_STATE_CHANGED) then
+    if not ShopData.GetEventFlag(ShopEvents.FLAG_STATE_CHANGED) then
         return
     end
 
     -- Happens when navigating to a new scene/menu
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_NEXT_SCENE) or ShopEvents.GetShopEventFlag(ShopEvents.FLAG_PREV_SCENE) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_NEXT_SCENE) or ShopData.GetEventFlag(ShopEvents.FLAG_PREV_SCENE) then
         ShopUI.ResetScene()
 
         local activeMenu = currentMenu or rootMenu
@@ -155,13 +164,10 @@ function ShopData.MaintainEvents()
             print("[NativeShop] Failed to build scene: " .. tostring(scene))
             ShopUI.Exit()
         end
-
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_NEXT_SCENE)
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_PREV_SCENE)
     end
 
     -- Happens when navigating to a new page/tab within the current scene
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_NEXT_PAGE) or ShopEvents.GetShopEventFlag(ShopEvents.FLAG_FILTER_CHANGED) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_NEXT_PAGE) or ShopData.GetEventFlag(ShopEvents.FLAG_FILTER_CHANGED) then
         local index = DatabindingReadDataIntFromParent(ShopUI.bindings.dscMain, "PageFilterCurrentPageIndex")
         local result = ShopNavigator:navigateTabs(index + 1)
 
@@ -169,24 +175,23 @@ function ShopData.MaintainEvents()
             ShopUI.UpdateSubheader()
             ShopUI.Virtuals.ResetCollection()
             ShopData.state.entryFocusIndex = 1
-            ShopUI.state.currentItemEntries = {}
+            ShopUI.state.currentItemEntriesByIndex = {}
+            ShopUI.state.currentItemEntriesById = {}
         else
             print("[NativeShop] Selected tab index '" .. index .. "' is invalid.")
         end
-
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_NEXT_PAGE)
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_FILTER_CHANGED)
     end
 
     -- Happens when an item is selected/activated
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_ITEM_SELECTED) then
-        if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_EXIT) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_ITEM_SELECTED) then
+        if ShopData.GetEventFlag(ShopEvents.FLAG_EXIT) then
             local result = ShopNavigator:navigateBack()
 
             if type(result) == "number" then
                 ShopUI.PrevScene()
                 ShopData.state.entryFocusIndex = result
-                ShopUI.state.currentItemEntries = {}
+                ShopUI.state.currentItemEntriesByIndex = {}
+                ShopUI.state.currentItemEntriesById = {}
             else
                 ShopUI.Exit()
             end
@@ -198,31 +203,25 @@ function ShopData.MaintainEvents()
         else
             ShopUI.Events.HandleItemAction(action)
         end
-
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_ITEM_SELECTED)
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_EXIT)
     end
 
     -- Happens when an item is unfocused/unhighlighted
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_UNFOCUSED) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_UNFOCUSED) then
         ShopUI.Events.HandleItemUnfocus()
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_UNFOCUSED)
     end
 
     -- Happens when an item is focused/highlighted
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_FOCUSED) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_FOCUSED) then
         ShopUI.Events.HandleItemFocus()
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_FOCUSED)
     end
 
     -- Happens when the stepper value for an item has changed
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE) then
         ShopUI.Events.HandleStepperChange()
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_STEPPER_DELTA_CHANGE)
     end
 
     -- Happens when a new collection has been set, usually when navigating to a new tab/page
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_NEW_COLLECTION) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_NEW_COLLECTION) then
         local collectionId = ShopEvents.state.collectionId
 
         if VirtualCollectionExists(collectionId) then
@@ -234,12 +233,10 @@ function ShopData.MaintainEvents()
 
         local entry = ShopData.state.entryFocusIndex
         ShopUI.SetIndex(entry - 1)
-
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_NEW_COLLECTION)
     end
 
     -- Happens when the UI requests more items to be added to the current collection
-    if ShopEvents.GetShopEventFlag(ShopEvents.FLAG_COLLECTION_REQUEST) then
+    if ShopData.GetEventFlag(ShopEvents.FLAG_COLLECTION_REQUEST) then
         ShopUI.CreateItemListBinding()
 
         local result = ShopUI.Builder.AddItemsToSceneWithinRange(
@@ -252,9 +249,5 @@ function ShopData.MaintainEvents()
             print("  Start Index: " .. tostring(ShopEvents.state.collectionStartIndex))
             print("  Request Parameter: " .. tostring(ShopEvents.state.collectionRequestParameter))
         end
-
-        ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_COLLECTION_REQUEST)
     end
-
-    ShopEvents.ClearShopEventFlag(ShopEvents.FLAG_STATE_CHANGED)
 end
