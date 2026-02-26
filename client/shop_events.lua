@@ -156,28 +156,36 @@ function ShopEvents.ReadDataString(datastore, key)
     return Citizen.InvokeNative(0x6323AD277C4A2AFB, datastore, key, Citizen.ResultAsString())
 end
 
+function ShopEvents.GetItemId(entry)
+    return ShopEvents.ReadDataString(entry, "uiItemID")
+end
+
+function ShopEvents.GetItemType(entry)
+    return ShopEvents.ReadDataString(entry, "uiItemType")
+end
+
 function ShopEvents.GetFocusedItemId()
-    return ShopEvents.ReadDataString(ShopEvents.state.focusedDatastore, "uiItemID")
+    return ShopEvents.GetItemId(ShopEvents.state.focusedDatastore)
 end
 
 function ShopEvents.GetFocusedItemType()
-    return ShopEvents.ReadDataString(ShopEvents.state.focusedDatastore, "uiItemType")
+    return ShopEvents.GetItemType(ShopEvents.state.focusedDatastore)
 end
 
 function ShopEvents.GetUnfocusedItemId()
-    return ShopEvents.ReadDataString(ShopEvents.state.unfocusedDatastore, "uiItemID")
+    return ShopEvents.GetItemId(ShopEvents.state.unfocusedDatastore)
 end
 
 function ShopEvents.GetUnfocusedItemType()
-    return ShopEvents.ReadDataString(ShopEvents.state.unfocusedDatastore, "uiItemType")
+    return ShopEvents.GetItemType(ShopEvents.state.unfocusedDatastore)
 end
 
 function ShopEvents.GetSelectedItemId()
-    return ShopEvents.ReadDataString(ShopEvents.state.selectedDatastore, "uiItemID")
+    return ShopEvents.GetItemId(ShopEvents.state.selectedDatastore)
 end
 
 function ShopEvents.GetSelectedItemType()
-    return ShopEvents.ReadDataString(ShopEvents.state.selectedDatastore, "uiItemType")
+    return ShopEvents.GetItemType(ShopEvents.state.selectedDatastore)
 end
 
 function ShopEvents.GetSelectedTargetMenu()

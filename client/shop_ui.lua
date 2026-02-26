@@ -561,20 +561,32 @@ end
 function ShopUI.RefreshAllItems()
     local currentItems = ShopNavigator:getCurrentItems()
 
-    for _, item in pairs(currentItems) do
-        ShopUI.RefreshItem(item.Id)
+    for index = 1, #currentItems do
+        ShopUI.RefreshItem(index)
     end
 end
 
-function ShopUI.RefreshItem(id)
-    local entry = ShopUI.state.currentItemEntries[id]
-    local currentItem = ShopNavigator:getItemById(id)
+function ShopUI.RefreshItem(index)
+    local entry = ShopUI.state.currentItemEntries[index]
+    if not entry or entry == 0 then return end
 
-    if currentItem and DatabindingIsEntryValid(entry) == 1 then
-        local result = ShopUI.Builder.FillItem(entry, currentItem)
-        if result == false then
-            print("[NativeShop] Error: Failed to refresh item: " .. tostring(currentItem.Id))
-        end
+    local item = ShopNavigator:getItemByIndex(index)
+    if not item or DatabindingIsEntryValid(entry) ~= 1 then
+        print("[NativeShop] Warning: Attempted to refresh invalid item at index " .. tostring(index))
+        return
+    end
+
+    local itemType = item.Type or "TEXT"
+    local entryType = ShopEvents.GetItemType(entry)
+    if itemType ~= entryType then
+        print("[NativeShop] Warning: Item type mismatch on refresh for item at index " .. tostring(index))
+        print("  You should only refresh items when there are items of a single type")
+        return
+    end
+
+    local result = ShopUI.Builder.FillItem(entry, item)
+    if result == false then
+        print("[NativeShop] Error: Failed to refresh item: " .. tostring(item.Id))
     end
 end
 
@@ -1644,7 +1656,7 @@ function ShopUI.Builder.TryAddItemToSlot(index)
         if type ~= 0 then
             DatabindingInsertUiItemToListFromContextHashAlias(ShopUI.bindings.dsuItemList, index, type, entry)
             VirtualCollectionItemAdd(ShopEvents.state.collectionId, index, type, entry)
-            ShopUI.state.currentItemEntries[item.Id] = entry
+            ShopUI.state.currentItemEntries[index + 1] = entry
 
             return true
         else
