@@ -519,6 +519,8 @@ function ShopUI.EnableItem(id)
 end
 
 function ShopUI.UpdateItemState(id)
+    if IsUiappTransitioningByHash("shop_menu") == 1 then return end
+
     local currentItem = ShopNavigator:getItemById(id)
     if not currentItem then return end
 
@@ -530,6 +532,8 @@ function ShopUI.UpdateItemState(id)
 end
 
 function ShopUI.RefreshMenu(id)
+    if IsUiappTransitioningByHash("shop_menu") == 1 then return end
+
     local currentMenu = ShopNavigator:getCurrentMenu()
     if not currentMenu then return end
 
@@ -554,16 +558,22 @@ function ShopUI.RefreshMenu(id)
 end
 
 function ShopUI.RefreshRoot(root)
+    if IsUiappTransitioningByHash("shop_menu") == 1 then return end
+
     ShopNavigator:refreshRoot(root)
     ShopUI.RefreshMenu(root)
 end
 
 function ShopUI.RefreshData(root, source)
+    if IsUiappTransitioningByHash("shop_menu") == 1 then return end
+
     ShopNavigator:refreshDataSource(root, source)
     ShopUI.RefreshMenu(root)
 end
 
 function ShopUI.RefreshAllItems()
+    if IsUiappTransitioningByHash("shop_menu") == 1 then return end
+
     local currentItems = ShopNavigator:getCurrentItems()
 
     for index = 1, #currentItems do
