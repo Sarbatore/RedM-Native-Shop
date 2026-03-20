@@ -113,6 +113,8 @@ function ShopData.MaintainEvents()
         local currentTime = GetGameTimer()
         if (currentTime - ShopData.state.onTickTimestamp) >= waitMs then
             Citizen.CreateThread(function()
+                if IsUiappTransitioningByHash("shop_menu") == 1 then return end
+
                 ShopData.state.onTickRunning = true
 
                 local success, error = pcall(currentMenu.Tick)
