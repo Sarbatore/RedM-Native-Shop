@@ -190,10 +190,10 @@ function ShopEvents.GetSelectedTargetMenu()
     return DatabindingReadDataIntFromParent(ShopEvents.state.selectedDatastore, "MenuIndex")
 end
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         if IsUiappRunning("shop_menu") ~= 1 then
-            Citizen.Wait(25)
+            Wait(25)
             goto continue
         end
 
@@ -328,7 +328,7 @@ Citizen.CreateThread(function()
             EventsUiPopMessage(`generic_shop_ui_events`)
         end
 
-        Citizen.Wait(0)
+        Wait(0)
         ::continue::
     end
 end)

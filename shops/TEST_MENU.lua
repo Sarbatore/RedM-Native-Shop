@@ -67,10 +67,10 @@ local data = {
 
 ShopNavigator:register(data)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         if IsUiappRunning("shop_menu") == 1 then
-            Citizen.Wait(250)
+            Wait(250)
             goto continue
         end
 
@@ -90,11 +90,11 @@ Citizen.CreateThread(function()
                 UiPromptSetAttribute(prompt, 17, true) -- kPromptAttrib_NoGroupCheck. Allows to appear in any active group
                 UiPromptRegisterEnd(prompt)
 
-                Citizen.CreateThread(function()
-                    Citizen.Wait(100)
+                CreateThread(function()
+                    Wait(100)
 
                     while UiPromptGetProgress(prompt) ~= 0.0 and UiPromptGetProgress(prompt) ~= 1.0 do
-                        Citizen.Wait(0)
+                        Wait(0)
                     end
 
                     if UiPromptGetProgress(prompt) == 1.0 then
@@ -107,7 +107,7 @@ Citizen.CreateThread(function()
             end
         end
 
-        Citizen.Wait(0)
+        Wait(0)
         ::continue::
     end
 end)
